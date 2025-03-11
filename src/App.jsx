@@ -1,22 +1,13 @@
+import { Route, Router, Routes } from 'react-router-dom'
 import './App.css'
 
 function App() {
   return (
     <>
-      <h1>My first page</h1>
-      <div>
-        <ul>
-          <li>
-            <a href='/about'>About</a>
-          </li>
-        </ul>
-      </div>
-
-      <div>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
+      <Routes>
+        <Route path='/' element={<h1>Home</h1>} />
+        <Route path='/login' element={<h1>Login</h1>} />
+      </Routes>
     </>
   )
 }
