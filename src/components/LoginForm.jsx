@@ -48,7 +48,7 @@ function LoginForm() {
           />
         </Form.Group>
 
-        <Button variant='primary' type='submit'>
+        <Button className='btn-custom mt-3' type='submit'>
           {isLoading ? (
             <span className='spinner-border spinner-border-sm'></span>
           ) : (
