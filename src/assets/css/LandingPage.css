@@ -1,10 +1,11 @@
 .landing-container {
   text-align: center;
   background-color: #222;
-  color: whitesmoke;
-  height: 100vh;
-  padding-top: 3rem;
+  color: rgb(247, 236, 236);
+  min-height: 100vh;
+  padding-top: 2rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -25,6 +26,20 @@
   gap: 15px;
 }
 
+@media (max-width: 576px) {
+  .landing-title {
+    font-size: 2.5rem;
+  }
+
+  .landing-sub {
+    font-size: 1.2rem;
+  }
+
+  .landing-button {
+    font-size: 1rem;
+  }
+}
+
 .landing-buttons .btn {
   padding: 10px 20px;
   font-size: 18px;
@@ -42,6 +57,19 @@
 
 .landing-button:hover {
   background-color: #e6b800;
-
   transform: translateY(-5px);
+}
+
+.landing-img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10%;
+  margin: 10px;
+}
+
+@media (max-width: 576px) {
+  .hide-mobile {
+    display: none;
+  }
 }
