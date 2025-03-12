@@ -18,10 +18,21 @@ function LoginForm() {
 
     try {
       const userData = await AuthService.login({ username, password })
-      setUser(userData)
-      navigate('/')
+      const userRole = AuthService.getUserRole()
+      setUser({
+        ...userData,
+        role: userRole,
+      })
+
+      console.log('User role: ', userRole)
+      if (userRole === 'ADMIN') {
+        navigate('/admin')
+      } else {
+        navigate('/')
+      }
     } catch (err) {
       setError('Credenziali non valide ' + err.message)
+      setIsLoading(false)
     }
   }
 
