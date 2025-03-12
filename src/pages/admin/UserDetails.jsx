@@ -1,7 +1,7 @@
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Container, Card, Spinner, Alert } from 'react-bootstrap'
+import { Container, Card, Spinner, Alert, Button } from 'react-bootstrap'
 
 const API_URL = 'http://localhost:8080/api/users'
 
@@ -52,6 +52,25 @@ function UserDetails() {
     fetchData(id)
   }, [id])
 
+  const handleDeleteUser = async () => {
+    try {
+      const response = await axios.delete(
+        `${API_URL}/deleteUser?targetUsername=${user.username}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authenticatedUser.token}`,
+          },
+        }
+      )
+      alert(response.data)
+      window.location.href = '/admin/gestione-utenti'
+    } catch (error) {
+      console.error("Errore nell'eliminazione dell'utente:", error)
+      alert("Errore durante l'eliminazione dell'utente.")
+    }
+  }
+
   if (isLoading) {
     return (
       <Container className='text-center mt-4'>
@@ -92,6 +111,9 @@ function UserDetails() {
             <strong>Data Registrazione:</strong> {formatDate(user.createdAt)}
           </p>
         </Card.Body>
+        <Button variant='danger' onClick={handleDeleteUser}>
+          Elimina Utente
+        </Button>
       </Card>
     </Container>
   )

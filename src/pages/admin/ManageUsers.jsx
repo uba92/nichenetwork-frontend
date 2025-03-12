@@ -133,7 +133,6 @@ function ManageUsers() {
               </Alert>
             )}
 
-            {users.length === 0 && <p>La ricerca non ha prodotto risultati</p>}
             <Table striped bordered hover responsive>
               <thead>
                 <tr>
