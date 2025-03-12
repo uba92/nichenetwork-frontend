@@ -4,15 +4,9 @@ import '../assets/css/CustomNavbar.css'
 import { useContext } from 'react'
 import { AuthContext } from '../context/AuthContext'
 
-console.log('AuthContext: ', AuthContext)
-
 function CustomNavbar() {
   const context = useContext(AuthContext)
-  console.log('AuthContext value: ', context)
   const { user, logout } = context || {}
-
-  console.log('user: ', user)
-  console.log('Logout function: ', logout)
 
   const navigate = useNavigate()
   const handleLogout = () => {

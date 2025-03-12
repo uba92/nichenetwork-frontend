@@ -7,6 +7,9 @@ import AdminRoute from './AdminRoute'
 import ManageUsers from '../pages/admin/ManageUsers'
 import ManageCommunities from '../pages/admin/ManageCommunities'
 import Settings from '../pages/admin/Settings'
+import ProtectedRoute from './ProtectedRoute'
+import UserHome from '../pages/UserHome'
+import UserDetails from '../pages/admin/UserDetails'
 
 function AppRoutes() {
   return (
@@ -14,9 +17,15 @@ function AppRoutes() {
       <Route path='/' element={<LandingPage />} />
       <Route path='/login' element={<LoginPage />} />
       <Route path='/register' element={<RegisterPage />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route path='/home' element={<UserHome />} />
+      </Route>
+
       <Route path='/admin/*' element={<AdminRoute />}>
         <Route path='' element={<AdminDashboard />}>
           <Route path='gestione-utenti' element={<ManageUsers />} />
+          <Route path='gestione-utenti/:id' element={<UserDetails />} />
           <Route path='gestione-community' element={<ManageCommunities />} />
           <Route path='impostazioni' element={<Settings />} />
         </Route>

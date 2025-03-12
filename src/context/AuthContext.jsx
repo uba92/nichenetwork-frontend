@@ -1,19 +1,31 @@
+import { jwtDecode } from 'jwt-decode'
 import { createContext, useState, useEffect } from 'react'
+import AuthService from '../services/AuthService'
 
 export const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const user = localStorage.getItem('user')
-    return user ? JSON.parse(user) : null
-  })
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user')
     if (storedUser) {
-      setUser(JSON.parse(storedUser))
+      try {
+        const parsedUser = JSON.parse(storedUser)
+
+        const decodedToken = jwtDecode(parsedUser.token)
+        const role = decodedToken.roles.includes('ROLE_ADMIN')
+          ? 'ADMIN'
+          : 'USER'
+        setUser({ token: parsedUser.token, role })
+      } catch (error) {
+        console.error('Errore durante la decodifica del token:', error)
+        AuthService.logout()
+      }
     }
-  }, []) // ✅ Carica l'utente all'inizio
+    setLoading(false)
+  }, [])
 
   const logout = () => {
     setUser(null)
@@ -21,7 +33,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
+    <AuthContext.Provider value={{ user, setUser, logout, loading }}>
       {children}
     </AuthContext.Provider>
   )

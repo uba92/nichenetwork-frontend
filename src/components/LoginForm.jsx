@@ -28,7 +28,7 @@ function LoginForm() {
       if (userRole === 'ADMIN') {
         navigate('/admin')
       } else {
-        navigate('/')
+        navigate('/home')
       }
     } catch (err) {
       setError('Credenziali non valide ' + err.message)

@@ -7,7 +7,6 @@ const login = async (credentials) => {
   const response = await axios.post(`${API_URL}login`, credentials)
   if (response.data.token) {
     localStorage.setItem('user', JSON.stringify(response.data))
-    console.log('Dati salvati al Login: ', response.data)
   }
 
   return response.data
@@ -18,7 +17,6 @@ const getUserRole = () => {
 
   if (user && user.token) {
     const decodedToken = jwtDecode(user.token)
-    console.log('Decode Token: ', decodedToken)
     if (decodedToken.roles.includes('ROLE_ADMIN')) {
       return 'ADMIN'
     }
