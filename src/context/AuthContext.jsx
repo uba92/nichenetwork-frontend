@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from 'react'
 
-export const AuthContext = createContext({})
+export const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
@@ -9,15 +9,19 @@ export const AuthProvider = ({ children }) => {
   })
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user))
-    } else {
-      localStorage.removeItem('user')
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
     }
-  }, [user])
+  }, []) // ✅ Carica l'utente all'inizio
+
+  const logout = () => {
+    setUser(null)
+    localStorage.removeItem('user')
+  }
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, logout }}>
       {children}
     </AuthContext.Provider>
   )

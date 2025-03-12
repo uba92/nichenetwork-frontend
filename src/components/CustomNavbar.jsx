@@ -1,11 +1,24 @@
 import { Navbar, Nav, Container } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import '../assets/css/CustomNavbar.css'
-import { useState } from 'react'
+import { useContext } from 'react'
+import { AuthContext } from '../context/AuthContext'
+
+console.log('AuthContext: ', AuthContext)
 
 function CustomNavbar() {
-  // eslint-disable-next-line no-unused-vars
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const context = useContext(AuthContext)
+  console.log('AuthContext value: ', context)
+  const { user, logout } = context || {}
+
+  console.log('user: ', user)
+  console.log('Logout function: ', logout)
+
+  const navigate = useNavigate()
+  const handleLogout = () => {
+    logout() // ✅ Esegui il logout
+    navigate('/login') // ✅ Torna alla pagina di login
+  }
 
   return (
     <Navbar expand='lg' className='navbar-custom' variant='dark'>
@@ -19,7 +32,7 @@ function CustomNavbar() {
             <Nav.Link as={Link} to='/' className='nav-link-custom'>
               Home
             </Nav.Link>
-            {!isAuthenticated ? (
+            {!user ? (
               <Nav.Link as={Link} to='/login' className='nav-link-custom'>
                 Login
               </Nav.Link>
@@ -34,7 +47,11 @@ function CustomNavbar() {
                 <Nav.Link as={Link} to='/' className='nav-link-custom'>
                   Impostazioni
                 </Nav.Link>
-                <Nav.Link as={Link} to='/' className='nav-link-custom'>
+                <Nav.Link
+                  onClick={handleLogout}
+                  style={{ cursor: 'pointer' }}
+                  className='nav-link-custom'
+                >
                   Logout
                 </Nav.Link>
               </>
