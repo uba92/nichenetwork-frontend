@@ -24,7 +24,6 @@ function LoginForm() {
         role: userRole,
       })
 
-      console.log('User role: ', userRole)
       if (userRole === 'ADMIN') {
         navigate('/admin')
       } else {

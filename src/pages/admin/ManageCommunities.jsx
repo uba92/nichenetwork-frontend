@@ -1,7 +1,15 @@
 import axios from 'axios'
 import { useEffect } from 'react'
 import { useState } from 'react'
-import { Button, Col, Container, Row, Spinner, Table } from 'react-bootstrap'
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  Row,
+  Spinner,
+  Table,
+} from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import CreateCommunityModal from './CreateCommunityModal'
 
@@ -11,6 +19,7 @@ function ManageCommunities() {
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const navigate = useNavigate()
 
@@ -53,6 +62,28 @@ function ManageCommunities() {
     })
   }
 
+  const handleSearch = async (query) => {
+    setSearchQuery(query)
+
+    if (!query) {
+      getCommunities()
+      return
+    }
+
+    try {
+      const response = await axios.get(`${API_URL}/search?query=${query}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authenticatedUser.token}`,
+        },
+      })
+
+      setCommunities(response.data)
+    } catch (error) {
+      console.error('Errore nella ricerca delle community:', error)
+    }
+  }
+
   useEffect(() => {
     if (authenticatedUser) {
       getCommunities()
@@ -66,6 +97,14 @@ function ManageCommunities() {
     <>
       <h1>Communities</h1>
       <Container>
+        <Form.Group className='mb-3'>
+          <Form.Control
+            type='text'
+            placeholder='Cerca community...'
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+        </Form.Group>
         <Row>
           <Col>
             {isError && (

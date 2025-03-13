@@ -7,6 +7,7 @@ const API_URL = 'http://localhost:8080/api/communities'
 function CreateCommunityModal({ show, handleClose, getCommunities }) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
 
   // eslint-disable-next-line no-unused-vars
   const [isError, setIsError] = useState(false)
@@ -23,16 +24,19 @@ function CreateCommunityModal({ show, handleClose, getCommunities }) {
     }
 
     try {
-      await axios.post(
-        `${API_URL}`,
-        { name, description },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authenticatedUser.token}`,
-          },
-        }
-      )
+      const formData = new FormData()
+      formData.append('name', name)
+      formData.append('description', description)
+
+      if (imageUrl) {
+        formData.append('image', imageUrl)
+      }
+      await axios.post(`${API_URL}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${authenticatedUser.token}`,
+        },
+      })
 
       handleClose()
       getCommunities()
@@ -72,6 +76,17 @@ function CreateCommunityModal({ show, handleClose, getCommunities }) {
               }}
               value={description}
               placeholder='Inserisci Descrizione'
+            />
+          </Form.Group>
+
+          <Form.Group controlId='imageUrl'>
+            <Form.Label>Immagine</Form.Label>
+            <Form.Control
+              onChange={(e) => {
+                setImageUrl(e.target.files[0])
+              }}
+              type='file'
+              accept='/image'
             />
           </Form.Group>
 

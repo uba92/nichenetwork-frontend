@@ -8,9 +8,10 @@ import ManageUsers from '../pages/admin/ManageUsers'
 import ManageCommunities from '../pages/admin/ManageCommunities'
 import Settings from '../pages/admin/Settings'
 import ProtectedRoute from './ProtectedRoute'
-import UserHome from '../pages/UserHome'
 import UserDetails from '../pages/admin/UserDetails'
 import CommunityDetails from '../pages/admin/CommunityDetails'
+import CommunityList from '../pages/CommunityLIst'
+import Communities from '../pages/Communities'
 
 function AppRoutes() {
   return (
@@ -20,7 +21,8 @@ function AppRoutes() {
       <Route path='/register' element={<RegisterPage />} />
 
       <Route element={<ProtectedRoute />}>
-        <Route path='/home' element={<UserHome />} />
+        <Route path='/home' element={<CommunityList />} />
+        <Route path='/home/communities' element={<Communities />} />
       </Route>
 
       <Route path='/admin/*' element={<AdminRoute />}>
