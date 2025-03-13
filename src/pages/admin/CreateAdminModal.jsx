@@ -10,6 +10,7 @@ function CreateAdminModal({ show, handleClose, fetchUsers }) {
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
+  // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState(null)
 
   const rawUser = localStorage.getItem('user')
@@ -39,7 +40,7 @@ function CreateAdminModal({ show, handleClose, fetchUsers }) {
       fetchUsers()
     } catch (err) {
       setError("Errore nella creazione dell'admin")
-      console.error("Errore nella creaziione dell'admin: ", err)
+      console.error("Errore nella creazione dell'admin: ", err)
     }
   }
 

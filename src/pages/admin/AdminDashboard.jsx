@@ -10,6 +10,7 @@ function AdminDashboard() {
           <AdminSidebar />
         </Col>
         <Col lg='9'>
+          <h1>Benvenuto nella pagina di gestione per utenti Admin</h1>
           <Outlet />
         </Col>
       </Row>

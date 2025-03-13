@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Container, Card, Spinner, Alert, Button } from 'react-bootstrap'
@@ -45,11 +45,12 @@ function UserDetails() {
       setIsLoading(false)
     } catch (error) {
       setIsError(true)
-      console.error('Error fetching users:', error)
+      console.error('Error fetching user:', error)
     }
   }
   useEffect(() => {
     fetchData(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
   const handleDeleteUser = async () => {

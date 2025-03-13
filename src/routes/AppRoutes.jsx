@@ -10,6 +10,7 @@ import Settings from '../pages/admin/Settings'
 import ProtectedRoute from './ProtectedRoute'
 import UserHome from '../pages/UserHome'
 import UserDetails from '../pages/admin/UserDetails'
+import CommunityDetails from '../pages/admin/CommunityDetails'
 
 function AppRoutes() {
   return (
@@ -27,6 +28,7 @@ function AppRoutes() {
           <Route path='gestione-utenti' element={<ManageUsers />} />
           <Route path='gestione-utenti/:id' element={<UserDetails />} />
           <Route path='gestione-community' element={<ManageCommunities />} />
+          <Route path='gestione-community/:id' element={<CommunityDetails />} />
           <Route path='impostazioni' element={<Settings />} />
         </Route>
       </Route>

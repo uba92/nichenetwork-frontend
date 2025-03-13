@@ -203,7 +203,7 @@ function ManageUsers() {
         <CreateAdminModal
           show={showModal}
           handleClose={() => setShowModal(false)}
-          fetchUser={fetchUsers}
+          fetchUsers={fetchUsers}
         />
       </Container>
     </>
