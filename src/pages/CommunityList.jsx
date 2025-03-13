@@ -4,16 +4,17 @@ import { AuthContext } from '../context/AuthContext'
 import { jwtDecode } from 'jwt-decode'
 import { Alert, Button, Card, Col, Container, Row } from 'react-bootstrap'
 import axios from 'axios'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const API_URL = 'http://localhost:8080/api/users/me/communities'
 
 function CommunityList() {
-  const { user, loading } = useContext(AuthContext)
+  const { user } = useContext(AuthContext)
   const [username, setUsername] = useState('')
   const [isError, setIsError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [myCommunities, setMyCommunities] = useState([])
+  const navigate = useNavigate()
 
   const rawUser = localStorage.getItem('user')
   const authenticatedUser = JSON.parse(rawUser)
@@ -49,7 +50,7 @@ function CommunityList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  if (loading) {
+  if (isLoading) {
     return <p>Caricamento...</p>
   }
 
@@ -67,22 +68,27 @@ function CommunityList() {
 
   return (
     <>
-      <Container fluid className='community-list-container'>
+      <Container
+        fluid
+        className='community-list-container d-flex flex-column'
+        style={{ minHeight: '100vh' }}
+      >
         {username ? (
           <h1>Ciao {username} - Benvenuto in NicheNetwork </h1>
         ) : (
           <p>Caricamento...</p>
         )}
-        <Row>
-          <Col>
-            <h2>Le tue Community</h2>
-          </Col>
-        </Row>
-        <Row className='justify-content-center mt-3'>
-          {!isLoading &&
-            (myCommunities.length > 0 ? (
-              myCommunities.map((community, index) => (
-                <Col key={index} xs={12} sm={6} lg={4} className=' mt-3'>
+
+        {myCommunities.length > 0 ? (
+          <>
+            <Row>
+              <Col>
+                <h2>Le tue Community</h2>
+              </Col>
+            </Row>
+            <Row className='justify-content-center mt-3'>
+              {myCommunities.map((community, index) => (
+                <Col key={index} xs={12} sm={6} lg={4} className='mt-3'>
                   <Card className='custom-community-card'>
                     <div className='image-container'>
                       <Card.Img
@@ -102,11 +108,30 @@ function CommunityList() {
                     </div>
                   </Card>
                 </Col>
-              ))
-            ) : (
-              <Link to='/home/communities'>Esplora le community</Link>
-            ))}
-        </Row>
+              ))}
+            </Row>
+          </>
+        ) : (
+          <Row className='flex-grow-1 d-flex align-items-center justify-content-center'>
+            <Col xs={12} sm={8} md={6} className='call-to-action-container'>
+              <img
+                src='/img/community.png'
+                alt='Community Illustration'
+                width='150'
+                className='mb-3'
+              />
+              <h3 className='text-light'>
+                Non sei ancora in nessuna Community?
+              </h3>
+              <p style={{ color: '#BBBBBB' }}>
+                Unisciti e inizia a partecipare!
+              </p>
+              <Button size='lg' onClick={() => navigate('/home/communities')}>
+                Esplora le community
+              </Button>
+            </Col>
+          </Row>
+        )}
       </Container>
     </>
   )

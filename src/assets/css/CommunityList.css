@@ -4,12 +4,13 @@ body,
 }
 
 .community-list-container {
+  display: flex;
+  flex-direction: column;
   text-align: center;
   background-color: #222;
   color: rgb(247, 236, 236);
   min-height: 100vh;
   padding-top: 2rem;
-  justify-content: center;
 }
 
 .custom-community-card {
@@ -81,4 +82,45 @@ body,
     rgba(0, 0, 0, 0) 0%,
     rgba(0, 0, 0, 0.5) 100%
   );
+}
+
+.call-to-action-container {
+  padding: 2rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 25px;
+  opacity: 0;
+  animation: fadeIn 1.5s forwards;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.call-to-action-container button {
+  background-color: #00adb5;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  font-size: 18px;
+  border-radius: 8px;
+  transition: background 0.3s, transform 0.2s;
+  animation: fadePulse 1.5s infinite ease-in-out;
+}
+
+@keyframes fadePulse {
+  0% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.8;
+    filter: brightness(1.5);
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+.call-to-action-container button:hover {
+  background-color: #008c9e;
+  transform: translateY(-5px);
+  cursor: pointer;
 }

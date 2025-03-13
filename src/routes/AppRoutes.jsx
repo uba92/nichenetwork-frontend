@@ -11,8 +11,7 @@ import ProtectedRoute from './ProtectedRoute'
 import UserDetails from '../pages/admin/UserDetails'
 import CommunityDetails from '../pages/admin/CommunityDetails'
 import CommunityList from '../pages/CommunityLIst'
-import Communities from '../pages/Communities'
-
+import DiscoverCommunities from '../pages/DiscoverCommunities'
 function AppRoutes() {
   return (
     <Routes>
@@ -22,7 +21,7 @@ function AppRoutes() {
 
       <Route element={<ProtectedRoute />}>
         <Route path='/home' element={<CommunityList />} />
-        <Route path='/home/communities' element={<Communities />} />
+        <Route path='/home/communities' element={<DiscoverCommunities />} />
       </Route>
 
       <Route path='/admin/*' element={<AdminRoute />}>
