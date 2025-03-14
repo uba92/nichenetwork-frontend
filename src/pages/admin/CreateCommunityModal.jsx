@@ -8,6 +8,7 @@ function CreateCommunityModal({ show, handleClose, getCommunities }) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [imageUrl, setImageUrl] = useState('')
+  const [color, setColor] = useState('#000000')
 
   // eslint-disable-next-line no-unused-vars
   const [isError, setIsError] = useState(false)
@@ -31,6 +32,8 @@ function CreateCommunityModal({ show, handleClose, getCommunities }) {
       if (imageUrl) {
         formData.append('image', imageUrl)
       }
+      formData.append('color', color)
+      console.log('Color inviato:', formData.get('color'))
       await axios.post(`${API_URL}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -76,6 +79,17 @@ function CreateCommunityModal({ show, handleClose, getCommunities }) {
               }}
               value={description}
               placeholder='Inserisci Descrizione'
+            />
+          </Form.Group>
+
+          <Form.Group controlId='color'>
+            <Form.Label>Colore</Form.Label>
+            <Form.Control
+              onChange={(e) => {
+                setColor(e.target.value)
+              }}
+              value={color}
+              type='color'
             />
           </Form.Group>
 

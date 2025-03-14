@@ -89,7 +89,12 @@ function CommunityList() {
             <Row className='justify-content-center mt-3'>
               {myCommunities.map((community, index) => (
                 <Col key={index} xs={12} sm={6} lg={4} className='mt-3'>
-                  <Card className='custom-community-card'>
+                  <Card
+                    className='custom-community-card'
+                    onClick={() =>
+                      navigate(`/home/communities/${community.id}`)
+                    }
+                  >
                     <div className='image-container'>
                       <Card.Img
                         className='custom-community-card-img'

@@ -1,0 +1,61 @@
+.cover-container {
+  position: relative;
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  width: 100%;
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 1.5s forwards;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+}
+
+.cover-container img {
+  position: absolute;
+  bottom: -50%;
+  left: 0;
+  object-fit: cover;
+  aspect-ratio: 1/1;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+.img-cover-container {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.cover-content-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+  color: #fff;
+  padding: 2rem;
+}
+
+.cover-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+}

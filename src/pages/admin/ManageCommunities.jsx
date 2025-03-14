@@ -157,7 +157,7 @@ function ManageCommunities() {
           </Col>
         </Row>
 
-        <Row>
+        <Row className=' pb-3'>
           <Col>
             <Button variant='warning' onClick={() => setShowModal(true)}>
               {' '}

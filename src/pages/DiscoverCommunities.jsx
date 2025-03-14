@@ -12,6 +12,7 @@ import '../assets/css/DiscoverCommunities.css'
 import { useEffect, useState, useCallback } from 'react'
 import axios from 'axios'
 import debounce from 'lodash.debounce'
+import { useNavigate } from 'react-router-dom'
 
 const API_URL = 'http://localhost:8080/api/communities'
 const API_URL_JOIN = 'http://localhost:8080/api/community-members'
@@ -22,6 +23,12 @@ function DiscoverCommunities() {
   const [searchQuery, setSearchQuery] = useState('')
   const [communities, setCommunities] = useState([])
   const [me, setMe] = useState({})
+  const [myCommunities, setMyCommunities] = useState([])
+  const [loadingJoin, setLoadingJoin] = useState(null)
+
+  const navigate = useNavigate()
+
+  const myCommunitiesIds = myCommunities.map((community) => community.id)
 
   const rawUser = localStorage.getItem('user')
   const authenticatedUser = rawUser ? JSON.parse(rawUser) : null
@@ -43,8 +50,6 @@ function DiscoverCommunities() {
     }
   }
 
-  console.log('Community recuperate dal DB: ', communities)
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
     debounce(async (query) => {
@@ -58,7 +63,6 @@ function DiscoverCommunities() {
         })
         setCommunities(response.data)
         setIsLoading(false)
-        console.log('Communities recuperate dalla ricerca: ', response.data)
       } catch (error) {
         setIsError(true)
         setIsLoading(false)
@@ -88,8 +92,18 @@ function DiscoverCommunities() {
         },
       })
       setMe(response.data)
+
+      const communitiesResponse = await axios.get(
+        'http://localhost:8080/api/users/me/communities',
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authenticatedUser.token}`,
+          },
+        }
+      )
+      setMyCommunities(communitiesResponse.data)
       setIsLoading(false)
-      console.log('Utente recuperato: ', response.data)
     } catch (error) {
       setIsError(true)
       setIsLoading(false)
@@ -98,10 +112,12 @@ function DiscoverCommunities() {
   }
 
   const handleJoinCommunity = async (communityId, userId) => {
-    if (me.communities?.some((c) => c.id === communityId)) {
-      alert('⚠️ Sei già iscritto a questa community!')
+    if (!authenticatedUser) {
+      console.error('Nessun utente autenticato!')
       return
     }
+
+    setLoadingJoin(communityId)
 
     try {
       const response = await axios.post(
@@ -117,13 +133,13 @@ function DiscoverCommunities() {
       console.log('Utente aggiunto alla community: ', response.data)
       getCommunities()
       getMe()
+
+      setTimeout(() => {
+        navigate('/home')
+      }, 1000)
     } catch (error) {
-      if (error.response.status === 403) {
-        alert('⚠️ Sei già iscritto a questa community!')
-      } else {
-        setIsError(true)
-        console.error('Error joining community:', error)
-      }
+      setIsError(true)
+      console.error('Error joining community:', error)
     }
   }
 
@@ -139,8 +155,6 @@ function DiscoverCommunities() {
     }
   }, [debouncedSearch])
 
-  console.log('Utente recuperato: ', me)
-
   if (isLoading) {
     return (
       <Container
@@ -149,7 +163,9 @@ function DiscoverCommunities() {
       >
         <Row>
           <Col xs='12'>
-            <h1 className='text-light display-3'>Esplora nuove Community</h1>
+            <h1 className='text-light display-3'>
+              Esplora le nostre Community
+            </h1>
           </Col>
         </Row>
         <Row className='mt-3 w-100'>
@@ -169,7 +185,9 @@ function DiscoverCommunities() {
       >
         <Row>
           <Col xs='12'>
-            <h1 className='text-light display-3'>Esplora nuove Community</h1>
+            <h1 className='text-light display-3'>
+              Esplora le nostre Community
+            </h1>
           </Col>
         </Row>
         <Row className='mt-3 w-100'>
@@ -188,7 +206,7 @@ function DiscoverCommunities() {
     >
       <Row>
         <Col xs='12'>
-          <h1 className='text-light display-3'>Esplora nuove Community</h1>
+          <h1 className='text-light display-3'>Esplora le nostre Community</h1>
         </Col>
       </Row>
       <Row className='mt-3 w-100'>
@@ -231,9 +249,25 @@ function DiscoverCommunities() {
                       me.id && handleJoinCommunity(community.id, me.id)
                     }
                     className='discover-community-btn'
-                    disabled={!me.id}
+                    disabled={!me.id || myCommunitiesIds.includes(community.id)}
+                    style={{
+                      display: myCommunitiesIds.includes(community.id)
+                        ? 'none'
+                        : 'block',
+                    }}
                   >
-                    JOIN
+                    {loadingJoin === community.id ? (
+                      <>
+                        <Spinner
+                          animation='border'
+                          size='sm'
+                          className='me-2'
+                        />{' '}
+                        Processing...
+                      </>
+                    ) : (
+                      'JOIN'
+                    )}
                   </Button>
                 </div>
               </Card>

@@ -12,6 +12,7 @@ import UserDetails from '../pages/admin/UserDetails'
 import CommunityDetails from '../pages/admin/CommunityDetails'
 import CommunityList from '../pages/CommunityLIst'
 import DiscoverCommunities from '../pages/DiscoverCommunities'
+import CommunityFeed from '../pages/CommunityFeed'
 function AppRoutes() {
   return (
     <Routes>
@@ -22,6 +23,10 @@ function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route path='/home' element={<CommunityList />} />
         <Route path='/home/communities' element={<DiscoverCommunities />} />
+        <Route
+          path='/home/communities/:communityId'
+          element={<CommunityFeed />}
+        />
       </Route>
 
       <Route path='/admin/*' element={<AdminRoute />}>
