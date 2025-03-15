@@ -1,6 +1,15 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { Button, Card, Col, Container, ListGroup, Row } from 'react-bootstrap'
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  FormGroup,
+  ListGroup,
+  Row,
+} from 'react-bootstrap'
 import { useNavigate, useParams } from 'react-router-dom'
 import '../assets/css/CommunityFeed.css'
 
@@ -11,13 +20,13 @@ const API_LEAVE_COMMUNITY = 'http://localhost:8080/api/community-members/leave'
 function CommunityFeed() {
   const { communityId } = useParams()
 
-  console.log('Id della community', communityId)
-
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const [posts, setPosts] = useState(null)
   const [community, setCommunity] = useState(null)
   const [me, setMe] = useState({})
+  const [content, setContent] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
 
   const navigate = useNavigate()
 
@@ -73,6 +82,40 @@ function CommunityFeed() {
       setIsError(true)
       setIsLoading(false)
       console.error('Error fetching posts:', error)
+    }
+  }
+
+  const createPost = async (e) => {
+    e.preventDefault()
+    if (!authenticatedUser) {
+      console.error('Nessun utente autenticato!')
+      return
+    }
+
+    if (!content || !communityId) {
+      console.error('Content e communityId sono obbligatori!')
+      return
+    }
+
+    try {
+      const formData = new FormData()
+      formData.append('content', content)
+      if (imageUrl) {
+        formData.append('image', imageUrl)
+      }
+      formData.append('communityId', communityId)
+
+      await axios.post('http://localhost:8080/api/posts', formData, {
+        headers: {
+          //   'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${authenticatedUser.token}`,
+        },
+      })
+      console.log('Post creato')
+      fetchPosts()
+    } catch (error) {
+      setIsError(true)
+      console.error('Error creating post:', error)
     }
   }
 
@@ -148,17 +191,44 @@ function CommunityFeed() {
 
             <Col className='d-flex flex-column align-items-center' md={6}>
               {community && (
-                <Card className='cover-container'>
-                  <div className='img-cover-container'>
-                    <Card.Img variant='top' src={community.imageUrl} />
-                    <div className='cover-overlay'></div>
-                  </div>
-                  <div className='cover-content-container'>
-                    <Card.Title className=' display-3'>
-                      {community.name}
-                    </Card.Title>
-                  </div>
-                </Card>
+                <>
+                  <Card className='cover-container'>
+                    <div className='img-cover-container'>
+                      <Card.Img variant='top' src={community.imageUrl} />
+                      <div className='cover-overlay'></div>
+                    </div>
+                    <div className='cover-content-container'>
+                      <Card.Title className=' display-3'>
+                        {community.name}
+                      </Card.Title>
+                    </div>
+                  </Card>
+                  <Form onSubmit={createPost}>
+                    <FormGroup controlId='content'>
+                      <Form.Label>Contenuto del post</Form.Label>
+                      <Form.Control
+                        as='textarea'
+                        rows={4}
+                        placeholder='Cosa vuoi condividere?'
+                        onChange={(e) => setContent(e.target.value)}
+                        value={content}
+                        className='my-3'
+                      />
+                    </FormGroup>
+
+                    <Form.Group controlId='imageUrl'>
+                      <Form.Label>Immagine</Form.Label>
+                      <Form.Control
+                        onChange={(e) => {
+                          setImageUrl(e.target.files[0])
+                        }}
+                        type='file'
+                        accept='/image'
+                      />
+                    </Form.Group>
+                    <Button type='submit'>crea post</Button>
+                  </Form>
+                </>
               )}
             </Col>
             {community && (

@@ -33,7 +33,7 @@ function CreateCommunityModal({ show, handleClose, getCommunities }) {
         formData.append('image', imageUrl)
       }
       formData.append('color', color)
-      console.log('Color inviato:', formData.get('color'))
+
       await axios.post(`${API_URL}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
