@@ -129,7 +129,7 @@ function CommunityList() {
                 Non sei ancora in nessuna Community?
               </h3>
               <p style={{ color: '#BBBBBB' }}>
-                Unisciti e inizia a partecipare!
+                Unisciti e inizia a Condividere!
               </p>
               <Button size='lg' onClick={() => navigate('/home/communities')}>
                 Esplora le community
