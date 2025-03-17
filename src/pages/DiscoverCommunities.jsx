@@ -233,7 +233,7 @@ function DiscoverCommunities() {
           <div></div>
         </div>
         <h2 className='text-light text-center my-3'>
-          Dai un'occhiata a queste community
+          Non sai da dove iniziare? Prova con queste!
         </h2>
 
         {communities &&
