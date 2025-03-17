@@ -6,12 +6,15 @@ import { AuthContext } from '../context/AuthContext'
 
 function CustomNavbar() {
   const context = useContext(AuthContext)
+  // eslint-disable-next-line no-unused-vars
   const { user, logout } = context || {}
+  const rawUser = localStorage.getItem('user')
+  const authenticatedUser = rawUser ? JSON.parse(rawUser) : null
 
   const navigate = useNavigate()
   const handleLogout = () => {
-    logout() // ✅ Esegui il logout
-    navigate('/login') // ✅ Torna alla pagina di login
+    logout()
+    navigate('/login')
   }
 
   return (
@@ -26,7 +29,7 @@ function CustomNavbar() {
             <Nav.Link as={Link} to='/home' className='nav-link-custom'>
               Home
             </Nav.Link>
-            {!user ? (
+            {!authenticatedUser ? (
               <Nav.Link as={Link} to='/login' className='nav-link-custom'>
                 Login
               </Nav.Link>
@@ -37,7 +40,7 @@ function CustomNavbar() {
                   to='/home/communities'
                   className='nav-link-custom'
                 >
-                  Community
+                  Esplora Community
                 </Nav.Link>
                 <Nav.Link as={Link} to='/' className='nav-link-custom'>
                   Profilo

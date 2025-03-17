@@ -206,7 +206,9 @@ function DiscoverCommunities() {
     >
       <Row>
         <Col xs='12'>
-          <h1 className='text-light display-3'>Esplora le nostre Community</h1>
+          <h1 className='text-light display-3'>
+            Cerca tra le nostre Community
+          </h1>
         </Col>
       </Row>
       <Row className='mt-3 w-100'>
@@ -224,7 +226,16 @@ function DiscoverCommunities() {
           </Form>
         </Col>
       </Row>
-      <Row className='d-flex align-items-center mt-3 w-100 justify-content-start'>
+      <Row className='d-flex align-items-center mt-5 w-100 justify-content-start'>
+        <div className='div-dots'>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <h2 className='text-light text-center my-3'>
+          Dai un'occhiata a queste community
+        </h2>
+
         {communities &&
           communities.slice(0, 6).map((community) => (
             <Col xs={12} sm={6} lg={4} className='mt-3' key={community.id}>
