@@ -37,3 +37,9 @@
   width: 100%;
   left: 0;
 }
+
+.custom-logout-modal {
+  background-color: #222;
+  color: #fff;
+  border: none;
+}

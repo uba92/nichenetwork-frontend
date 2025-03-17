@@ -1,10 +1,12 @@
-import { Navbar, Nav, Container } from 'react-bootstrap'
+import { Navbar, Nav, Container, Modal, Button } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
 import '../assets/css/CustomNavbar.css'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
 
 function CustomNavbar() {
+  const [showModal, setShowModal] = useState(false)
+
   const context = useContext(AuthContext)
   // eslint-disable-next-line no-unused-vars
   const { user, logout } = context || {}
@@ -14,6 +16,7 @@ function CustomNavbar() {
   const navigate = useNavigate()
   const handleLogout = () => {
     logout()
+    setShowModal(false)
     navigate('/login')
   }
 
@@ -49,7 +52,7 @@ function CustomNavbar() {
                   Impostazioni
                 </Nav.Link>
                 <Nav.Link
-                  onClick={handleLogout}
+                  onClick={setShowModal.bind(this, true)}
                   style={{ cursor: 'pointer' }}
                   className='nav-link-custom'
                 >
@@ -60,6 +63,36 @@ function CustomNavbar() {
           </Nav>
         </Navbar.Collapse>
       </Container>
+
+      <Modal
+        show={showModal}
+        onHide={() => {}}
+        backdrop='static'
+        keyboard={false}
+        centered
+      >
+        <Container className='custom-logout-modal'>
+          <Modal.Body className='text-center'>
+            <Modal.Title>Sicuro di voler uscire?</Modal.Title>
+          </Modal.Body>
+          <Modal.Footer className='justify-content-center'>
+            <Button
+              variant='secondary'
+              onClick={() => setShowModal(false)}
+              className=' w-25'
+            >
+              Annulla
+            </Button>
+            <Button
+              variant='danger'
+              onClick={() => handleLogout()}
+              className=' w-25'
+            >
+              Esci
+            </Button>
+          </Modal.Footer>
+        </Container>
+      </Modal>
     </Navbar>
   )
 }
