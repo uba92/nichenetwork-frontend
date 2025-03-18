@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   Button,
   Card,
@@ -32,6 +32,22 @@ function CommunityFeed() {
 
   const rawUser = localStorage.getItem('user')
   const authenticatedUser = rawUser ? JSON.parse(rawUser) : null
+
+  const debounce = (func, delay) => {
+    let timeoutId
+    return (...args) => {
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => func(...args), delay)
+    }
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleContentChange = useCallback(
+    debounce((value) => {
+      setContent(value)
+    }, 300),
+    []
+  )
 
   const getCommunity = async () => {
     try {
@@ -210,7 +226,7 @@ function CommunityFeed() {
                         as='textarea'
                         rows={4}
                         placeholder='Cosa vuoi condividere?'
-                        onChange={(e) => setContent(e.target.value)}
+                        onChange={(e) => handleContentChange(e.target.value)}
                         value={content}
                         className='my-3'
                       />
