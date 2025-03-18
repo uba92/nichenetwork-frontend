@@ -36,6 +36,12 @@ function CreateAdminModal({ show, handleClose, fetchUsers }) {
         }
       )
 
+      setUsername('')
+      setEmail('')
+      setPassword('')
+      setFirstName('')
+      setLastName('')
+
       handleClose()
       fetchUsers()
     } catch (err) {

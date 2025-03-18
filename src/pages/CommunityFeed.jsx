@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   Button,
   Card,
@@ -9,9 +9,11 @@ import {
   FormGroup,
   ListGroup,
   Row,
+  Spinner,
 } from 'react-bootstrap'
 import { useNavigate, useParams } from 'react-router-dom'
 import '../assets/css/CommunityFeed.css'
+import PostCard from '../components/PostCard'
 
 const API_GET_POSTS = 'http://localhost:8080/api/posts/community'
 const API_GET_COMMUNITY = 'http://localhost:8080/api/communities'
@@ -27,27 +29,12 @@ function CommunityFeed() {
   const [me, setMe] = useState({})
   const [content, setContent] = useState('')
   const [imageUrl, setImageUrl] = useState('')
+  const fileInputRef = useRef(null)
 
   const navigate = useNavigate()
 
   const rawUser = localStorage.getItem('user')
   const authenticatedUser = rawUser ? JSON.parse(rawUser) : null
-
-  const debounce = (func, delay) => {
-    let timeoutId
-    return (...args) => {
-      clearTimeout(timeoutId)
-      timeoutId = setTimeout(() => func(...args), delay)
-    }
-  }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleContentChange = useCallback(
-    debounce((value) => {
-      setContent(value)
-    }, 300),
-    []
-  )
 
   const getCommunity = async () => {
     try {
@@ -76,13 +63,14 @@ function CommunityFeed() {
       })
       setMe(response.data)
       setIsLoading(false)
-      console.log('Utente recuperato: ', response.data)
     } catch (error) {
       setIsError(true)
       setIsLoading(false)
       console.error('Error fetching user:', error)
     }
   }
+
+  console.log('Me recuperato: ', me)
 
   const fetchPosts = async () => {
     try {
@@ -93,6 +81,7 @@ function CommunityFeed() {
         },
       })
       setPosts(response.data)
+      console.log('Posts recuperati: ', posts)
       setIsLoading(false)
     } catch (error) {
       setIsError(true)
@@ -100,9 +89,9 @@ function CommunityFeed() {
       console.error('Error fetching posts:', error)
     }
   }
-
   const createPost = async (e) => {
     e.preventDefault()
+
     if (!authenticatedUser) {
       console.error('Nessun utente autenticato!')
       return
@@ -114,11 +103,16 @@ function CommunityFeed() {
     }
 
     try {
+      setIsLoading(true)
+
       const formData = new FormData()
+
       formData.append('content', content)
+
       if (imageUrl) {
         formData.append('image', imageUrl)
       }
+
       formData.append('communityId', communityId)
 
       await axios.post('http://localhost:8080/api/posts', formData, {
@@ -128,10 +122,19 @@ function CommunityFeed() {
         },
       })
       console.log('Post creato')
+      setContent('')
+      setImageUrl('')
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+
       fetchPosts()
     } catch (error) {
       setIsError(true)
       console.error('Error creating post:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -145,16 +148,12 @@ function CommunityFeed() {
       return
     }
     try {
-      const response = await axios.delete(
-        `${API_LEAVE_COMMUNITY}/${me.id}/${communityId}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authenticatedUser.token}`,
-          },
-        }
-      )
-      console.log('Community left:', response.data)
+      await axios.delete(`${API_LEAVE_COMMUNITY}/${me.id}/${communityId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authenticatedUser.token}`,
+        },
+      })
       setTimeout(() => {
         navigate('/home')
       }, 1000)
@@ -165,117 +164,129 @@ function CommunityFeed() {
   }
 
   useEffect(() => {
-    fetchPosts()
-    getCommunity()
-    getMe()
+    const fetchData = async () => {
+      await getMe()
+      fetchPosts()
+      getCommunity()
+    }
+
+    fetchData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  console.log('Posts della community: ', posts)
-  console.log('Community: ', community)
+  console.log('Posts: ', posts)
+  console.log('Me recuperato: ', me)
 
   return (
     <Container fluid className='p-3' style={{ height: '100vh' }}>
-      <Row className='h-100'>
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : isError ? (
-          <p>Error fetching posts</p>
-        ) : (
-          <>
-            {community && (
-              <Col
-                md={3}
-                className='border-end h-100'
-                style={{
-                  background: `linear-gradient( 0deg, ${community.color} 0%, transparent 100%)`,
-                }}
-              >
-                <ListGroup>
-                  <ListGroup.Item className='text-center'>
-                    MyAvatar
-                  </ListGroup.Item>
-                  <ListGroup.Item className='text-center'>
-                    CommunityMember
-                  </ListGroup.Item>
-                  <ListGroup.Item className='text-center'>
-                    Communities
-                  </ListGroup.Item>
-                </ListGroup>
-              </Col>
-            )}
+      {isError && <p>{isError}</p>}
 
-            <Col className='d-flex flex-column align-items-center' md={6}>
-              {community && (
-                <>
-                  <Card className='cover-container'>
-                    <div className='img-cover-container'>
-                      <Card.Img variant='top' src={community.imageUrl} />
-                      <div className='cover-overlay'></div>
-                    </div>
-                    <div className='cover-content-container'>
-                      <Card.Title className=' display-3'>
-                        {community.name}
-                      </Card.Title>
-                    </div>
-                  </Card>
-                  <Form onSubmit={createPost}>
-                    <FormGroup controlId='content'>
-                      <Form.Label>Contenuto del post</Form.Label>
-                      <Form.Control
-                        as='textarea'
-                        rows={4}
-                        placeholder='Cosa vuoi condividere?'
-                        onChange={(e) => handleContentChange(e.target.value)}
-                        value={content}
-                        className='my-3'
-                      />
-                    </FormGroup>
+      <Row className='d-flex' style={{ minHeight: '100%' }}>
+        {community && (
+          <Col
+            md={3}
+            className='border-end sidebar-left'
+            style={{
+              minHeight: '100vh',
+              background: `linear-gradient( 0deg, ${community.color} 0%, transparent 100%)`,
+            }}
+          >
+            <ListGroup>
+              <ListGroup.Item className='text-center'>MyAvatar</ListGroup.Item>
+              <ListGroup.Item className='text-center'>
+                CommunityMember
+              </ListGroup.Item>
+              <ListGroup.Item className='text-center'>
+                Communities
+              </ListGroup.Item>
+            </ListGroup>
+          </Col>
+        )}
 
-                    <Form.Group controlId='imageUrl'>
-                      <Form.Label>Immagine</Form.Label>
-                      <Form.Control
-                        onChange={(e) => {
-                          setImageUrl(e.target.files[0])
-                        }}
-                        type='file'
-                        accept='/image'
-                      />
-                    </Form.Group>
-                    <Button type='submit'>crea post</Button>
-                  </Form>
-                </>
-              )}
-            </Col>
-            {community && (
-              <Col
-                style={{
-                  background: `linear-gradient( 0deg, ${community.color} 0%, transparent 100%)`,
-                }}
-                md={3}
-                className='h-100 border-start'
-              >
-                <Card className=' border-0 bg-transparent'>
-                  <Card.Body className=' text-center'>
-                    <Card.Title className=' py-2'>{community.name}</Card.Title>
-                    <Card.Text className=' py-2'>
-                      {community.description}
-                    </Card.Text>
-                    <Card.Text className=' py-2'>
-                      Membri della community
-                    </Card.Text>
-                    <Card.Text className=' py-2'>25</Card.Text>
-                  </Card.Body>
-                </Card>
-                <Button
-                  onClick={leaveCommunity}
-                  className=' d-block mx-auto my-3'
-                >
-                  Leave Community
+        <Col className='d-flex flex-column align-items-center' md={6}>
+          {community && (
+            <>
+              <Card className='cover-container'>
+                <div className='img-cover-container'>
+                  <Card.Img variant='top' src={community.imageUrl} />
+                  <div className='cover-overlay'></div>
+                </div>
+                <div className='cover-content-container'>
+                  <Card.Title className='display-3'>
+                    {community.name}
+                  </Card.Title>
+                </div>
+              </Card>
+
+              <Form className='post-form' onSubmit={createPost}>
+                <img
+                  className='form-avatar'
+                  src={me.avatar ? me.avatar : 'https://placedog.net/50'}
+                  alt='me-avatar'
+                />{' '}
+                <span>Cosa vuoi condividere?</span>
+                <FormGroup controlId='content'>
+                  <Form.Control
+                    as='textarea'
+                    rows={4}
+                    placeholder='Condividi con la Community...'
+                    onChange={(e) => setContent(e.target.value)}
+                    value={content}
+                    className='my-3'
+                  />
+                </FormGroup>
+                <Form.Group controlId='imageUrl'>
+                  <Form.Label>Immagine</Form.Label>
+                  <Form.Control
+                    ref={fileInputRef}
+                    onChange={(e) => {
+                      setImageUrl(e.target.files[0])
+                    }}
+                    type='file'
+                    accept='/image'
+                  />
+                </Form.Group>
+                <Button type='submit' disabled={isLoading}>
+                  {isLoading ? (
+                    <Spinner animation='border' size='sm' />
+                  ) : (
+                    'Pubblica'
+                  )}
                 </Button>
-              </Col>
-            )}
-          </>
+              </Form>
+
+              {!isError &&
+                !isLoading &&
+                posts &&
+                me &&
+                posts.content.map((post) => (
+                  <PostCard key={post.id} post={post} />
+                ))}
+            </>
+          )}
+        </Col>
+
+        {community && (
+          <Col
+            style={{
+              minHeight: '100vh',
+              background: `linear-gradient( 0deg, ${community.color} 0%, transparent 100%)`,
+            }}
+            md={3}
+            className='sidebar-right border-start'
+          >
+            <Card className='border-0 bg-transparent'>
+              <Button onClick={leaveCommunity} className='d-block mx-auto my-3'>
+                Leave Community
+              </Button>
+              <Card.Body className='text-center'>
+                <Card.Title className='py-2'>{community.name}</Card.Title>
+                <Card.Text className='py-2'>{community.description}</Card.Text>
+                <Card.Text className='py-2'>Membri della community</Card.Text>
+                <Card.Text className='py-2'>25</Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
         )}
       </Row>
     </Container>

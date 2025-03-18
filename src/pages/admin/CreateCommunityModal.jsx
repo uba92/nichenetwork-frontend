@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useState } from 'react'
-import { Button, Form, Modal } from 'react-bootstrap'
+import { Alert, Button, Form, Modal, Spinner } from 'react-bootstrap'
 
 const API_URL = 'http://localhost:8080/api/communities'
 
@@ -9,8 +9,8 @@ function CreateCommunityModal({ show, handleClose, getCommunities }) {
   const [description, setDescription] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [color, setColor] = useState('#000000')
+  const [isLoading, setIsLoading] = useState(false)
 
-  // eslint-disable-next-line no-unused-vars
   const [isError, setIsError] = useState(false)
 
   const rawUser = localStorage.getItem('user')
@@ -18,6 +18,9 @@ function CreateCommunityModal({ show, handleClose, getCommunities }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    setIsLoading(true)
+    setIsError(false)
 
     if (!name || !description) {
       setIsError('Tutti i campi sono obbligatori')
@@ -41,22 +44,29 @@ function CreateCommunityModal({ show, handleClose, getCommunities }) {
         },
       })
 
+      setName('')
+      setDescription('')
+      setImageUrl('')
+      setColor('#000000')
+      setIsLoading(false)
       handleClose()
       getCommunities()
     } catch (error) {
       setIsError('Errore nella creazione della community')
+      setIsLoading(false)
       console.error('Errore nella creazione della community: ', error)
     }
   }
 
   return (
     <Modal show={show} onHide={handleClose}>
+      {isError && <Alert variant='danger'>{isError}</Alert>}
       <Modal.Header>
         <Modal.Title>Crea una nuova Community</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit} id='create-community-modal'>
           <Form.Group controlId='name'>
             <Form.Label>Nome</Form.Label>
             <Form.Control
@@ -105,7 +115,13 @@ function CreateCommunityModal({ show, handleClose, getCommunities }) {
           </Form.Group>
 
           <Button variant='primary' type='submit' className='mt-3'>
-            Crea Community
+            {isLoading && !isError ? (
+              <Spinner>
+                <span className='visually-hidden'>Loading...</span>
+              </Spinner>
+            ) : (
+              'Crea Community'
+            )}
           </Button>
         </Form>
       </Modal.Body>
