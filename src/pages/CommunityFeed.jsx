@@ -70,8 +70,6 @@ function CommunityFeed() {
     }
   }
 
-  console.log('Me recuperato: ', me)
-
   const fetchPosts = async () => {
     try {
       const response = await axios.get(`${API_GET_POSTS}/${communityId}`, {
@@ -81,7 +79,6 @@ function CommunityFeed() {
         },
       })
       setPosts(response.data)
-      console.log('Posts recuperati: ', posts)
       setIsLoading(false)
     } catch (error) {
       setIsError(true)
@@ -173,9 +170,6 @@ function CommunityFeed() {
     fetchData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  console.log('Posts: ', posts)
-  console.log('Me recuperato: ', me)
 
   return (
     <Container fluid className='p-3' style={{ height: '100vh' }}>

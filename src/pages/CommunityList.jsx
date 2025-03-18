@@ -39,8 +39,6 @@ function CommunityList() {
     }
   }
 
-  console.log(' Le mie communities: ', myCommunities)
-
   useEffect(() => {
     if (rawUser) {
       const userUsername = jwtDecode(authenticatedUser.token).sub

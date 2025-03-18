@@ -14,7 +14,8 @@
 
 .postcard-header {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 12px;
   border-bottom: 1px solid #eee;
   padding-bottom: 10px;
@@ -32,6 +33,11 @@
   font-weight: bold;
   font-size: 1.1rem;
   color: #333;
+}
+
+.postcard-date {
+  font-size: 0.9rem;
+  color: #777;
 }
 
 .postcard-content {
@@ -83,11 +89,107 @@
   color: darkred;
 }
 
-/* Commenti */
 .comment-button {
   color: gray;
 }
 
 .comment-button:hover {
   color: black;
+}
+
+.comment-section {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.comment {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.comment:last-child {
+  border-bottom: none;
+}
+
+.comment strong {
+  color: #007bff;
+}
+
+.comment p {
+  margin: 0;
+  color: #333;
+}
+
+.comment-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.comment-form textarea {
+  flex: 1;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: none;
+}
+
+.comment-form button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.comment-form button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.comment-dropdown-btn {
+  background-color: transparent;
+  color: #333;
+  border: none;
+}
+
+.comment-dropdown-btn:hover {
+  color: #ddd;
+  background-color: #555;
+}
+
+.comment-dropdown-btn::after {
+  display: none !important;
+}
+
+.comment-dropdown-menu {
+  background-color: #333;
+  color: #fff;
+  border: none;
+}
+
+.comment-dropdown-item {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  width: 75%;
+  margin: 0 auto;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.comment-dropdown-item:hover {
+  background-color: #555;
+  color: #fff;
+  border: none;
+  width: 75%;
+  margin: 0 auto;
 }
