@@ -14,6 +14,7 @@ import CommunityList from '../pages/CommunityLIst'
 import DiscoverCommunities from '../pages/DiscoverCommunities'
 import CommunityFeed from '../pages/CommunityFeed'
 import ProfilePage from '../pages/ProfilePage'
+import SettingsPage from '../pages/SettingsPage'
 function AppRoutes() {
   return (
     <Routes>
@@ -29,7 +30,10 @@ function AppRoutes() {
           element={<CommunityFeed />}
         />
         <Route path='/home/profile/:userId' element={<ProfilePage />} />
-        <Route path='/home/profile/settings/:userId' element={<Settings />} />
+        <Route
+          path='/home/profile/settings/:userId'
+          element={<SettingsPage />}
+        />
       </Route>
 
       <Route path='/admin/*' element={<AdminRoute />}>
