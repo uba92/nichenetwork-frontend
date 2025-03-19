@@ -1,8 +1,9 @@
 import { Navbar, Nav, Container, Modal, Button } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
 import '../assets/css/CustomNavbar.css'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
+import axios from 'axios'
 
 function CustomNavbar() {
   const [showModal, setShowModal] = useState(false)
@@ -12,6 +13,25 @@ function CustomNavbar() {
   const { user, logout } = context || {}
   const rawUser = localStorage.getItem('user')
   const authenticatedUser = rawUser ? JSON.parse(rawUser) : null
+  const [userId, setUserId] = useState('')
+
+  const getUserId = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/users/me', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authenticatedUser.token}`,
+        },
+      })
+      setUserId(response.data.id)
+    } catch (error) {
+      console.error('Error fetching user:', error)
+    }
+  }
+
+  useEffect(() => {
+    getUserId()
+  }, [])
 
   const navigate = useNavigate()
   const handleLogout = () => {
@@ -45,10 +65,18 @@ function CustomNavbar() {
                 >
                   Esplora Community
                 </Nav.Link>
-                <Nav.Link as={Link} to='/' className='nav-link-custom'>
+                <Nav.Link
+                  as={Link}
+                  to={`/home/profile/${userId}`}
+                  className='nav-link-custom'
+                >
                   Profilo
                 </Nav.Link>
-                <Nav.Link as={Link} to='/' className='nav-link-custom'>
+                <Nav.Link
+                  as={Link}
+                  to='/home/profile/settings/:userId'
+                  className='nav-link-custom'
+                >
                   Impostazioni
                 </Nav.Link>
                 <Nav.Link

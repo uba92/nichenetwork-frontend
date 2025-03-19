@@ -76,7 +76,7 @@ function CommunityFeed() {
       )
       setCommunityMembers(response.data)
       setNumberOfMembers(response.data.length)
-      console.log('Membri della community: ', response.data)
+
       setIsLoading(false)
     } catch (error) {
       setIsError(true)
@@ -221,15 +221,41 @@ function CommunityFeed() {
               background: `linear-gradient(0deg, ${community.color} 0%, transparent 100%)`,
             }}
           >
-            <ListGroup>
-              <ListGroup.Item className='text-center'>MyAvatar</ListGroup.Item>
-              <ListGroup.Item className='text-center'>
-                CommunityMember
-              </ListGroup.Item>
-              <ListGroup.Item className='text-center'>
-                Communities
-              </ListGroup.Item>
-            </ListGroup>
+            {me && (
+              <Card className='sidebar-left-card'>
+                <Card.Header className='text-center'>
+                  <Card.Img
+                    onClick={() => navigate(`/home/profile/${me.id}`)}
+                    variant='top'
+                    src={me?.avatar ? me.avatar : '/img/avatar-profilo.jpg'}
+                    className='sidebar-left-avatar'
+                  />
+                </Card.Header>
+                <Card.Body>
+                  <ListGroup className='sidebar-left-list'>
+                    <ListGroup.Item
+                      className='sidebar-left-username'
+                      onClick={() => navigate(`/home/profile/${me.id}`)}
+                    >
+                      {me.firstName.toUpperCase()} {me.lastName.toUpperCase()}
+                    </ListGroup.Item>
+
+                    <ListGroup.Item className='sidebar-left-bio'>
+                      {me.bio ? me.bio : 'Nessuna bio disponibile'}
+                    </ListGroup.Item>
+
+                    <ListGroup.Item>{me.email}</ListGroup.Item>
+                    <ListGroup.Item
+                      onClick={() =>
+                        navigate(`/home/profile/settings/${me.id}`)
+                      }
+                    >
+                      Impostazioni
+                    </ListGroup.Item>
+                  </ListGroup>
+                </Card.Body>
+              </Card>
+            )}
           </Col>
         )}
 
@@ -243,22 +269,40 @@ function CommunityFeed() {
 
         <Offcanvas show={showSidebar} onHide={handleCloseSidebar}>
           <Offcanvas.Header closeButton>
-            <Offcanvas.Title>Menu</Offcanvas.Title>
+            <Offcanvas.Title>Profilo</Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body>
-            <ListGroup>
-              <ListGroup.Item className='text-center'>MyAvatar</ListGroup.Item>
-              <ListGroup.Item className='text-center'>
-                CommunityMember
-              </ListGroup.Item>
-              <ListGroup.Item className='text-center'>
-                Communities
-              </ListGroup.Item>
-            </ListGroup>
+            <Card className='sidebar-left-card'>
+              <Card.Header className='text-center'>
+                <Card.Img
+                  variant='top'
+                  src={me?.avatar ? me.avatar : '/img/avatar-profilo.jpg'}
+                  className='sidebar-left-avatar'
+                />
+              </Card.Header>
+              <Card.Body>
+                <ListGroup className='sidebar-left-list'>
+                  <ListGroup.Item className='sidebar-left-username'>
+                    {me?.firstName} {me?.lastName}
+                  </ListGroup.Item>
+                  {me.bio && (
+                    <ListGroup.Item className='sidebar-left-bio'>
+                      {me.bio}
+                    </ListGroup.Item>
+                  )}
+                  <ListGroup.Item>{me.email}</ListGroup.Item>
+                  <ListGroup.Item>Impostazioni</ListGroup.Item>
+                </ListGroup>
+              </Card.Body>
+            </Card>
           </Offcanvas.Body>
         </Offcanvas>
 
-        <Col className='d-flex flex-column align-items-center' md={6} sm={12}>
+        <Col
+          className='d-flex flex-column align-items-center col-feed-post'
+          md={6}
+          sm={12}
+        >
           {community && (
             <>
               <Card className='cover-container'>
@@ -276,7 +320,7 @@ function CommunityFeed() {
               <Form className='post-form' onSubmit={createPost}>
                 <img
                   className='form-avatar'
-                  src={me.avatar ? me.avatar : 'https://placedog.net/50'}
+                  src={me.avatar ? me.avatar : '/img/avatar-profilo.jpg'}
                   alt='me-avatar'
                 />{' '}
                 <span>Cosa vuoi condividere?</span>
@@ -354,7 +398,7 @@ function CommunityFeed() {
                       className='d-flex align-items-center suggested-member-item'
                     >
                       <img
-                        src={member.avatar || 'https://placedog.net/50'}
+                        src={member.avatar || '/img/avatar-profilo.jpg'}
                         alt='avatar'
                         className='rounded-circle member-avatar'
                       />

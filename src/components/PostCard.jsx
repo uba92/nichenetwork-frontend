@@ -166,13 +166,37 @@ function PostCard({ post }) {
     })
   }
 
+  const detectLinks = (text) => {
+    if (!text) return ''
+
+    // RegExp per rilevare link
+    const urlRegex = /(https?:\/\/[^\s]+)/g
+
+    // Sostituisce i link con <a href>
+    return text.split(urlRegex).map((part, index) =>
+      urlRegex.test(part) ? (
+        <a
+          key={index}
+          href={part}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='post-link'
+        >
+          {part}
+        </a>
+      ) : (
+        part
+      )
+    )
+  }
+
   return (
     <Card className='my-3 post-card'>
       <Card.Header className='postcard-header'>
         <div>
           <Card.Img
             className='postcard-avatar me-3'
-            src={post.author.avatar || 'https://placedog.net/50'}
+            src={post.author.avatar || '/img/avatar-profilo.jpg'}
             alt='avatar'
           />
           <span className='postcard-username'>{post.author.username}</span>
@@ -180,7 +204,9 @@ function PostCard({ post }) {
         <div className='postcard-date'>{formatDate(post.createdAt)}</div>
       </Card.Header>
       <Card.Body>
-        <Card.Text className='postcard-content'>{post.content}</Card.Text>
+        <Card.Text className='postcard-content'>
+          {detectLinks(post.content)}
+        </Card.Text>
         {post.image && (
           <Card.Img className='postcard-image' variant='top' src={post.image} />
         )}
