@@ -150,7 +150,6 @@ function CommunityFeed() {
           Authorization: `Bearer ${authenticatedUser.token}`,
         },
       })
-      console.log('Post creato')
       setContent('')
       setImageUrl('')
 
@@ -278,6 +277,7 @@ function CommunityFeed() {
                   variant='top'
                   src={me?.avatar ? me.avatar : '/img/avatar-profilo.jpg'}
                   className='sidebar-left-avatar'
+                  onClick={() => navigate(`/home/profile/${me.id}`)}
                 />
               </Card.Header>
               <Card.Body>
@@ -291,7 +291,11 @@ function CommunityFeed() {
                     </ListGroup.Item>
                   )}
                   <ListGroup.Item>{me.email}</ListGroup.Item>
-                  <ListGroup.Item>Impostazioni</ListGroup.Item>
+                  <ListGroup.Item
+                    onClick={() => navigate(`/home/profile/settings/${me.id}`)}
+                  >
+                    Impostazioni
+                  </ListGroup.Item>
                 </ListGroup>
               </Card.Body>
             </Card>
@@ -396,6 +400,9 @@ function CommunityFeed() {
                     <ListGroup.Item
                       key={member.id}
                       className='d-flex align-items-center suggested-member-item'
+                      onClick={() => {
+                        navigate(`/home/user/${member.id}`)
+                      }}
                     >
                       <img
                         src={member.avatar || '/img/avatar-profilo.jpg'}

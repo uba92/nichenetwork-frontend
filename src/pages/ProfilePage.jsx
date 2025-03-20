@@ -7,7 +7,7 @@ import '../assets/css/ProfilePage.css'
 
 function ProfilePage() {
   const { userId } = useParams()
-  console.log(userId)
+
   const rawUser = localStorage.getItem('user')
   const authenticatedUser = rawUser ? JSON.parse(rawUser) : null
 
@@ -59,7 +59,6 @@ function ProfilePage() {
 
       setMyCommunities(response.data)
       setIsLoading(false)
-      console.log('Communities recuperate: ', response.data)
     } catch (error) {
       setIsError(true)
       setIsLoading(false)
@@ -86,7 +85,6 @@ function ProfilePage() {
 
       setPosts(response.data)
       setIsLoading(false)
-      console.log('Posts recuperati: ', response.data)
     } catch (error) {
       setIsError(true)
       setIsLoading(false)
@@ -128,7 +126,7 @@ function ProfilePage() {
   if (isError || !me) return <p>Errore nel caricamento del profilo</p>
 
   return (
-    <Container className='mt-4'>
+    <Container className='mt-4 p-3' fluid>
       <Row>
         <Col md={4}>
           <Card className='profile-card text-center'>

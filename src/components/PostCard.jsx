@@ -117,9 +117,6 @@ function PostCard({ post }) {
   const handleAddComment = async () => {
     if (!newComment.trim()) return
 
-    const requestBody = { content: newComment }
-    console.log('Invio commento:', requestBody)
-
     try {
       await axios.post(
         `http://localhost:8080/api/comments/post/${post.id}/user/${userId}`,
@@ -169,10 +166,8 @@ function PostCard({ post }) {
   const detectLinks = (text) => {
     if (!text) return ''
 
-    // RegExp per rilevare link
     const urlRegex = /(https?:\/\/[^\s]+)/g
 
-    // Sostituisce i link con <a href>
     return text.split(urlRegex).map((part, index) =>
       urlRegex.test(part) ? (
         <a
