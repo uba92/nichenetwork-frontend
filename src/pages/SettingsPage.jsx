@@ -1,10 +1,11 @@
 import { Button, Card, Container, Form } from 'react-bootstrap'
 import '../assets/css/SettingsPage.css'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
+import { AuthContext } from '../context/AuthContext'
+import { jwtDecode } from 'jwt-decode'
 
 function SettingsPage() {
-  const [me, setMe] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const [bio, setBio] = useState('')
@@ -13,8 +14,7 @@ function SettingsPage() {
   const [newPassword, setNewPassword] = useState('')
   const [username, setUsername] = useState('')
 
-  const rawUser = localStorage.getItem('user')
-  const authenticatedUser = rawUser ? JSON.parse(rawUser) : null
+  const { user } = useContext(AuthContext)
 
   const handleAvatarChange = (e) => {
     setAvatar(e.target.files[0])
@@ -33,7 +33,7 @@ function SettingsPage() {
   }
 
   const updateAvatar = async () => {
-    if (!authenticatedUser) {
+    if (!user) {
       console.log('Nessun utente autenticato!')
       return
     }
@@ -53,14 +53,14 @@ function SettingsPage() {
         {
           headers: {
             'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${authenticatedUser.token}`,
+            Authorization: `Bearer ${user.token}`,
           },
         }
       )
 
       console.log('Avatar aggiornato con successo', response.data)
       alert('Avatar aggiornato con successo!')
-      window.location.href = `/home/profile/${me.id}`
+      window.location.href = `/home/profile/${user.id}`
     } catch (error) {
       setIsError(true)
       console.error('Error updating avatar:', error)
@@ -78,14 +78,14 @@ function SettingsPage() {
         { bio },
         {
           headers: {
-            Authorization: `Bearer ${authenticatedUser.token}`,
+            Authorization: `Bearer ${user.token}`,
             'Content-Type': 'application/json',
           },
         }
       )
 
       alert('Bio aggiornata con successo!')
-      window.location.href = `/home/profile/${me.id}`
+      window.location.href = `/home/profile/${user.id}`
     } catch (error) {
       console.error('Errore aggiornando bio:', error)
     }
@@ -107,7 +107,7 @@ function SettingsPage() {
         { oldPassword, newPassword },
         {
           headers: {
-            Authorization: `Bearer ${authenticatedUser.token}`,
+            Authorization: `Bearer ${user.token}`,
             'Content-Type': 'application/json',
           },
         }
@@ -122,7 +122,7 @@ function SettingsPage() {
   }
 
   const deleteAccount = async () => {
-    if (!authenticatedUser) {
+    if (!user) {
       console.log('Nessun utente autenticato!')
       return
     }
@@ -152,7 +152,7 @@ function SettingsPage() {
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${authenticatedUser.token}`,
+            Authorization: `Bearer ${user.token}`,
           },
           data: requestData,
         }
@@ -169,34 +169,13 @@ function SettingsPage() {
     }
   }
 
-  const getMe = async () => {
-    if (!authenticatedUser) {
-      console.log('Nessun utente autenticato!')
-      return
-    }
-
-    try {
-      const response = await axios.get('http://localhost:8080/api/users/me', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
-        },
-      })
-
-      setMe(response.data)
-      setUsername(response.data.username)
-      setIsLoading(false)
-    } catch (error) {
-      setIsError(true)
-      setIsLoading(false)
-      console.error('Error fetching user:', error)
-    }
-  }
-
   useEffect(() => {
-    getMe()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    if (user?.token) {
+      const parsedUsername = jwtDecode(user.token).sub
+      setUsername(parsedUsername)
+      setIsLoading(false)
+    }
+  }, [user.token])
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -208,7 +187,7 @@ function SettingsPage() {
 
   return (
     <>
-      <Container className='settings-container my-4'>
+      <Container className='my-4 settings-container'>
         <Card>
           <Card.Body>
             <Card.Title className='text-center'>

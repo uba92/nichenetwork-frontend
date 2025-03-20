@@ -12,12 +12,10 @@ function LandingPage() {
   const authenticatedUser = rawUser ? JSON.parse(rawUser) : null
 
   useEffect(() => {
-    console.log('-----Utene-----', authenticatedUser)
     if (authenticatedUser) {
       try {
         const decodedToken = jwtDecode(authenticatedUser.token)
         const now = Date.now() / 1000
-        console.log('Token exp: ', decodedToken.exp)
         if (decodedToken.exp < now) {
           localStorage.removeItem('user')
           navigate('/login')
@@ -43,7 +41,7 @@ function LandingPage() {
               transition={{ duration: 2 }}
             >
               <img
-                className='landing-img hide-mobile'
+                className='hide-mobile landing-img'
                 src='/img/cinema.jpg'
                 alt='cinema'
               />
@@ -84,7 +82,7 @@ function LandingPage() {
             >
               <img className='landing-img' src='/img/natura.jpg' alt='natura' />
               <img
-                className='landing-img hide-mobile'
+                className='hide-mobile landing-img'
                 src='/img/sport.jpg'
                 alt='sport'
               />

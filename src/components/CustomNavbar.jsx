@@ -1,43 +1,44 @@
-import { Navbar, Nav, Container, Modal, Button } from 'react-bootstrap'
+import { Navbar, Nav, Container, Modal, Button, Spinner } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
 import '../assets/css/CustomNavbar.css'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
-import axios from 'axios'
 
 function CustomNavbar() {
   const [showModal, setShowModal] = useState(false)
 
-  const context = useContext(AuthContext)
-  // eslint-disable-next-line no-unused-vars
-  const { user, logout } = context || {}
-  const rawUser = localStorage.getItem('user')
-  const authenticatedUser = rawUser ? JSON.parse(rawUser) : null
-  const [userId, setUserId] = useState('')
-
-  const getUserId = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/api/users/me', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
-        },
-      })
-      setUserId(response.data.id)
-    } catch (error) {
-      console.error('Error fetching user:', error)
-    }
-  }
-
-  useEffect(() => {
-    getUserId()
-  }, [])
+  const { user, logout, loading } = useContext(AuthContext)
 
   const navigate = useNavigate()
+
   const handleLogout = () => {
     logout()
     setShowModal(false)
     navigate('/login')
+  }
+
+  if (loading) {
+    return <Spinner animation='border' />
+  }
+
+  if (!user) {
+    return (
+      <Navbar expand='lg' className='navbar-custom' variant='dark'>
+        <Container>
+          <Navbar.Brand as={Link} to='/home' className='navbar-brand-custom'>
+            🌐 Niche Network
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls='navbar-nav' />
+          <Navbar.Collapse id='navbar-nav'>
+            <Nav className='ms-auto'>
+              <Nav.Link as={Link} to='/login' className='nav-link-custom'>
+                Login
+              </Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+    )
   }
 
   return (
@@ -52,42 +53,34 @@ function CustomNavbar() {
             <Nav.Link as={Link} to='/home' className='nav-link-custom'>
               Home
             </Nav.Link>
-            {!authenticatedUser ? (
-              <Nav.Link as={Link} to='/login' className='nav-link-custom'>
-                Login
-              </Nav.Link>
-            ) : (
-              <>
-                <Nav.Link
-                  as={Link}
-                  to='/home/communities'
-                  className='nav-link-custom'
-                >
-                  Esplora Community
-                </Nav.Link>
-                <Nav.Link
-                  as={Link}
-                  to={`/home/profile/${userId}`}
-                  className='nav-link-custom'
-                >
-                  Profilo
-                </Nav.Link>
-                <Nav.Link
-                  as={Link}
-                  to='/home/profile/settings/:userId'
-                  className='nav-link-custom'
-                >
-                  Impostazioni
-                </Nav.Link>
-                <Nav.Link
-                  onClick={setShowModal.bind(this, true)}
-                  style={{ cursor: 'pointer' }}
-                  className='nav-link-custom'
-                >
-                  Logout
-                </Nav.Link>
-              </>
-            )}
+            <Nav.Link
+              as={Link}
+              to='/home/communities'
+              className='nav-link-custom'
+            >
+              Esplora Community
+            </Nav.Link>
+            <Nav.Link
+              as={Link}
+              to={`/home/profile/${user.id}`}
+              className='nav-link-custom'
+            >
+              Profilo
+            </Nav.Link>
+            <Nav.Link
+              as={Link}
+              to={`/home/profile/settings/${user.id}`}
+              className='nav-link-custom'
+            >
+              Impostazioni
+            </Nav.Link>
+            <Nav.Link
+              onClick={() => setShowModal(true)}
+              style={{ cursor: 'pointer' }}
+              className='nav-link-custom'
+            >
+              Logout
+            </Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
@@ -107,15 +100,11 @@ function CustomNavbar() {
             <Button
               variant='secondary'
               onClick={() => setShowModal(false)}
-              className=' w-25'
+              className='w-25'
             >
               Annulla
             </Button>
-            <Button
-              variant='danger'
-              onClick={() => handleLogout()}
-              className=' w-25'
-            >
+            <Button variant='danger' onClick={handleLogout} className='w-25'>
               Esci
             </Button>
           </Modal.Footer>

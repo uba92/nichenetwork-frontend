@@ -33,7 +33,6 @@
   justify-content: space-between;
   min-height: 100vh;
   flex: 1;
-  padding: 15px;
 }
 
 @keyframes fadeIn {
@@ -199,6 +198,12 @@
   font-size: 0.85rem;
   color: #666;
   margin: 0;
+  text-overflow: ellipsis;
+}
+
+.member-email-div {
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .sidebar-left-card {

@@ -2,7 +2,15 @@ import '../assets/css/CommunityList.css'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
 import { jwtDecode } from 'jwt-decode'
-import { Alert, Button, Card, Col, Container, Row } from 'react-bootstrap'
+import {
+  Alert,
+  Button,
+  Card,
+  Col,
+  Container,
+  Row,
+  Spinner,
+} from 'react-bootstrap'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
@@ -16,11 +24,8 @@ function CommunityList() {
   const [myCommunities, setMyCommunities] = useState([])
   const navigate = useNavigate()
 
-  const rawUser = localStorage.getItem('user')
-  const authenticatedUser = JSON.parse(rawUser)
-
   const getMyCommunities = async () => {
-    if (!authenticatedUser) {
+    if (!user) {
       console.error('Nessun utente autenticato')
       return
     }
@@ -28,7 +33,7 @@ function CommunityList() {
       const response = await axios.get(API_URL, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
       })
       setMyCommunities(response.data)
@@ -40,16 +45,24 @@ function CommunityList() {
   }
 
   useEffect(() => {
-    if (rawUser) {
-      const userUsername = jwtDecode(authenticatedUser.token).sub
+    if (user) {
+      const userUsername = jwtDecode(user.token).sub
       setUsername(userUsername)
     }
     getMyCommunities()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [user])
 
   if (isLoading) {
-    return <p>Caricamento...</p>
+    return (
+      <Container
+        fluid
+        className='d-flex align-items-center justify-content-center'
+        style={{ minHeight: '100vh' }}
+      >
+        <Spinner animation='border' />
+      </Container>
+    )
   }
 
   if (!user) {
@@ -68,7 +81,7 @@ function CommunityList() {
     <>
       <Container
         fluid
-        className='community-list-container d-flex flex-column'
+        className='d-flex flex-column community-list-container'
         style={{ minHeight: '100vh' }}
       >
         {username ? (
@@ -115,7 +128,7 @@ function CommunityList() {
             </Row>
           </>
         ) : (
-          <Row className='flex-grow-1 d-flex align-items-center justify-content-center'>
+          <Row className='d-flex flex-grow-1 align-items-center justify-content-center'>
             <Col xs={12} sm={8} md={6} className='call-to-action-container'>
               <img
                 src='/img/community.png'

@@ -9,15 +9,17 @@ import {
   Spinner,
 } from 'react-bootstrap'
 import '../assets/css/DiscoverCommunities.css'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useContext } from 'react'
 import axios from 'axios'
 import debounce from 'lodash.debounce'
 import { useNavigate } from 'react-router-dom'
+import { AuthContext } from '../context/AuthContext'
 
 const API_URL = 'http://localhost:8080/api/communities'
 const API_URL_JOIN = 'http://localhost:8080/api/community-members'
 
 function DiscoverCommunities() {
+  const { user } = useContext(AuthContext)
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -30,15 +32,12 @@ function DiscoverCommunities() {
 
   const myCommunitiesIds = myCommunities.map((community) => community.id)
 
-  const rawUser = localStorage.getItem('user')
-  const authenticatedUser = rawUser ? JSON.parse(rawUser) : null
-
   const getCommunities = async () => {
     try {
       const response = await axios.get(`${API_URL}`, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
       })
       setCommunities(response.data)
@@ -58,7 +57,7 @@ function DiscoverCommunities() {
         const response = await axios.get(`${API_URL}/search?query=${query}`, {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${authenticatedUser.token}`,
+            Authorization: `Bearer ${user.token}`,
           },
         })
         setCommunities(response.data)
@@ -69,7 +68,7 @@ function DiscoverCommunities() {
         console.error('Error fetching communities:', error)
       }
     }, 500),
-    [API_URL, authenticatedUser.token]
+    [API_URL, user.token]
   )
 
   const handleSearch = async (query) => {
@@ -88,7 +87,7 @@ function DiscoverCommunities() {
       const response = await axios.get('http://localhost:8080/api/users/me', {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
       })
       setMe(response.data)
@@ -98,7 +97,7 @@ function DiscoverCommunities() {
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${authenticatedUser.token}`,
+            Authorization: `Bearer ${user.token}`,
           },
         }
       )
@@ -112,7 +111,7 @@ function DiscoverCommunities() {
   }
 
   const handleJoinCommunity = async (communityId, userId) => {
-    if (!authenticatedUser) {
+    if (!user) {
       console.error('Nessun utente autenticato!')
       return
     }
@@ -120,17 +119,16 @@ function DiscoverCommunities() {
     setLoadingJoin(communityId)
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${API_URL_JOIN}/join/${userId}/${communityId}`,
         {},
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${authenticatedUser.token}`,
+            Authorization: `Bearer ${user.token}`,
           },
         }
       )
-      console.log('Utente aggiunto alla community: ', response.data)
       getCommunities()
       getMe()
 
@@ -159,20 +157,21 @@ function DiscoverCommunities() {
     return (
       <Container
         fluid
-        className=' d-flex py-3 flex-column align-items-center discover-communities-container'
+        className='d-flex flex-column align-items-center discover-communities-container py-3'
       >
         <Row>
           <Col xs='12'>
-            <h1 className='text-light display-3'>
+            <h1 className='display-3 text-light'>
               Esplora le nostre Community
             </h1>
           </Col>
         </Row>
-        <Row className='mt-3 w-100'>
-          <Col>
-            <Spinner animation='border' variant='light' />
-          </Col>
-        </Row>
+        <Container
+          className='d-flex align-items-center justify-content-center w-100 mt-3'
+          style={{ minHeight: '100vh' }}
+        >
+          <Spinner animation='border' variant='light' />
+        </Container>
       </Container>
     )
   }
@@ -181,16 +180,16 @@ function DiscoverCommunities() {
     return (
       <Container
         fluid
-        className=' d-flex py-3 flex-column align-items-center discover-communities-container'
+        className='d-flex flex-column align-items-center discover-communities-container py-3'
       >
         <Row>
           <Col xs='12'>
-            <h1 className='text-light display-3'>
+            <h1 className='display-3 text-light'>
               Esplora le nostre Community
             </h1>
           </Col>
         </Row>
-        <Row className='mt-3 w-100'>
+        <Row className='w-100 mt-3'>
           <Col>
             <Alert variant='danger'>Errore nella richiesta!</Alert>
           </Col>
@@ -202,23 +201,23 @@ function DiscoverCommunities() {
   return (
     <Container
       fluid
-      className=' d-flex py-3 flex-column align-items-center discover-communities-container'
+      className='d-flex flex-column align-items-center discover-communities-container py-3'
     >
       <Row>
         <Col xs='12'>
-          <h1 className='text-light display-3'>
+          <h1 className='display-3 text-light'>
             Cerca tra le nostre Community
           </h1>
         </Col>
       </Row>
-      <Row className='mt-3 w-100'>
+      <Row className='w-100 mt-3'>
         <Col>
           <Form>
             <Form.Group controlId='searchCommunityInput'>
               <Form.Control
                 onChange={(e) => handleSearch(e.target.value)}
                 value={searchQuery}
-                className=' rounded-5 bg-secondary text-light search-community-input'
+                className='bg-secondary rounded-5 text-light search-community-input'
                 type='text'
                 placeholder='Cerca la Community più adatta a te...'
               />
@@ -226,13 +225,13 @@ function DiscoverCommunities() {
           </Form>
         </Col>
       </Row>
-      <Row className='d-flex align-items-center mt-5 w-100 justify-content-start'>
+      <Row className='d-flex align-items-center justify-content-start w-100 mt-5'>
         <div className='div-dots'>
           <div></div>
           <div></div>
           <div></div>
         </div>
-        <h2 className='text-light text-center my-3'>
+        <h2 className='text-center text-light my-3'>
           Non sai da dove iniziare? Prova con queste!
         </h2>
 
@@ -248,7 +247,7 @@ function DiscoverCommunities() {
                   />
                   <div className='overlay'></div>
                 </div>
-                <div className='discover-community-card-overlay-content d-flex flex-column align-items-center'>
+                <div className='d-flex flex-column align-items-center discover-community-card-overlay-content'>
                   <Card.Title className='discover-community-card-title'>
                     {community.name}
                   </Card.Title>

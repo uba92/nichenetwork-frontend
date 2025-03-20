@@ -2,32 +2,19 @@ import { Card, Dropdown } from 'react-bootstrap'
 import { Heart, MessageCircle, MoreHorizontal } from 'lucide-react'
 import '../assets/css/Postcard.css'
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
+import { AuthContext } from '../context/AuthContext'
 
 function PostCard({ post }) {
   const [likeCount, setLikeCount] = useState(0)
   const [likedByUser, setLikedByUser] = useState(false)
   const [userId, setUserId] = useState(null)
-  const rawUser = localStorage.getItem('user')
-  const authenticatedUser = rawUser ? JSON.parse(rawUser) : null
+
+  const { user } = useContext(AuthContext)
 
   const [comments, setComments] = useState([])
   const [showComments, setShowComments] = useState(false)
   const [newComment, setNewComment] = useState('')
-
-  const getUserId = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/api/users/me', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
-        },
-      })
-      setUserId(response.data.id)
-    } catch (error) {
-      console.error('Error fetching user:', error)
-    }
-  }
 
   const fetchLikes = async (userId) => {
     try {
@@ -35,7 +22,7 @@ function PostCard({ post }) {
         `http://localhost:8080/api/likes/post/${post.id}/count`,
         {
           headers: {
-            Authorization: `Bearer ${authenticatedUser.token}`,
+            Authorization: `Bearer ${user.token}`,
           },
         }
       )
@@ -45,7 +32,7 @@ function PostCard({ post }) {
         `http://localhost:8080/api/likes/post/${post.id}/user/${userId}`,
         {
           headers: {
-            Authorization: `Bearer ${authenticatedUser.token}`,
+            Authorization: `Bearer ${user.token}`,
           },
         }
       )
@@ -62,7 +49,7 @@ function PostCard({ post }) {
         `http://localhost:8080/api/comments/post/${post.id}`,
         {
           headers: {
-            Authorization: `Bearer ${authenticatedUser.token}`,
+            Authorization: `Bearer ${user.token}`,
           },
         }
       )
@@ -73,10 +60,7 @@ function PostCard({ post }) {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
-      await getUserId()
-    }
-    fetchData()
+    setUserId(user.id)
     fetchComments()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -100,7 +84,7 @@ function PostCard({ post }) {
         {},
         {
           headers: {
-            Authorization: `Bearer ${authenticatedUser.token}`,
+            Authorization: `Bearer ${user.token}`,
           },
         }
       )
@@ -123,7 +107,7 @@ function PostCard({ post }) {
         null,
 
         {
-          headers: { Authorization: `Bearer ${authenticatedUser.token}` },
+          headers: { Authorization: `Bearer ${user.token}` },
           params: { content: newComment },
         }
       )
@@ -136,17 +120,15 @@ function PostCard({ post }) {
   }
 
   const handleDeleteComment = async (commentId) => {
-    console.log('UserId:', userId)
     try {
       await axios.delete(
         `http://localhost:8080/api/comments/${commentId}/user/${userId}`,
         {
           headers: {
-            Authorization: `Bearer ${authenticatedUser.token}`,
+            Authorization: `Bearer ${user.token}`,
           },
         }
       )
-      console.log('Commento eliminato con successo')
       fetchComments()
     } catch (error) {
       console.error('Error deleting comment:', error)
@@ -190,7 +172,7 @@ function PostCard({ post }) {
       <Card.Header className='postcard-header'>
         <div>
           <Card.Img
-            className='postcard-avatar me-3'
+            className='me-3 postcard-avatar'
             src={post.author.avatar || '/img/avatar-profilo.jpg'}
             alt='avatar'
           />
@@ -227,7 +209,7 @@ function PostCard({ post }) {
               comments.map((comment) => (
                 <div
                   key={comment.id}
-                  className='comment d-flex justify-content-between'
+                  className='d-flex justify-content-between comment'
                 >
                   <div>
                     <strong>{comment.author.username}:</strong>{' '}
@@ -243,7 +225,7 @@ function PostCard({ post }) {
 
                     <Dropdown.Menu className='comment-dropdown-menu'>
                       <Dropdown.Item
-                        className='comment-dropdown-item text-light'
+                        className='text-light comment-dropdown-item'
                         onClick={() => handleDeleteComment(comment.id)}
                       >
                         Elimina

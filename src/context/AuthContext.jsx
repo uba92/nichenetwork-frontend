@@ -1,7 +1,9 @@
-import { jwtDecode } from 'jwt-decode'
 import { createContext, useState, useEffect } from 'react'
+import axios from 'axios'
 import AuthService from '../services/AuthService'
+import { jwtDecode } from 'jwt-decode'
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
@@ -9,22 +11,54 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser)
+    const loadUser = async () => {
+      const storedUser = localStorage.getItem('user')
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser)
+          const decodedToken = jwtDecode(parsedUser.token)
+          const response = await axios.get(
+            'http://localhost:8080/api/users/me',
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${parsedUser.token}`,
+              },
+            }
+          )
+          const userData = response.data
 
-        const decodedToken = jwtDecode(parsedUser.token)
-        const role = decodedToken.roles.includes('ROLE_ADMIN')
-          ? 'ADMIN'
-          : 'USER'
-        setUser({ token: parsedUser.token, role })
-      } catch (error) {
-        console.error('Errore durante la decodifica del token:', error)
-        AuthService.logout()
+          const enrichedUser = {
+            token: parsedUser.token,
+            role:
+              decodedToken.roles && decodedToken.roles.includes('ROLE_ADMIN')
+                ? 'ADMIN'
+                : 'USER',
+            id: userData.id,
+          }
+
+          setUser(enrichedUser)
+
+          localStorage.setItem(
+            'user',
+            JSON.stringify({
+              token: parsedUser.token,
+              id: userData.id,
+              role:
+                decodedToken.roles && decodedToken.roles.includes('ROLE_ADMIN')
+                  ? 'ADMIN'
+                  : 'USER',
+            })
+          )
+        } catch (error) {
+          console.error('Errore nel recupero dei dati utente:', error)
+          AuthService.logout()
+        }
       }
+      setLoading(false)
     }
-    setLoading(false)
+
+    loadUser()
   }, [])
 
   const logout = () => {

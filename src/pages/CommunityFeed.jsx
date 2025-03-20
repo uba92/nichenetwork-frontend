@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import {
   Button,
   Card,
@@ -17,6 +17,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import '../assets/css/CommunityFeed.css'
 import PostCard from '../components/PostCard'
 import { ArrowBigLeft } from 'lucide-react'
+import { AuthContext } from '../context/AuthContext'
 
 const API_GET_POSTS = 'http://localhost:8080/api/posts/community'
 const API_GET_COMMUNITY = 'http://localhost:8080/api/communities'
@@ -24,6 +25,8 @@ const API_LEAVE_COMMUNITY = 'http://localhost:8080/api/community-members/leave'
 
 function CommunityFeed() {
   const { communityId } = useParams()
+
+  const { user } = useContext(AuthContext)
 
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
@@ -43,15 +46,12 @@ function CommunityFeed() {
 
   const navigate = useNavigate()
 
-  const rawUser = localStorage.getItem('user')
-  const authenticatedUser = rawUser ? JSON.parse(rawUser) : null
-
   const getCommunity = async () => {
     try {
       const response = await axios.get(`${API_GET_COMMUNITY}/${communityId}`, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
       })
       setCommunity(response.data)
@@ -70,7 +70,7 @@ function CommunityFeed() {
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${authenticatedUser.token}`,
+            Authorization: `Bearer ${user.token}`,
           },
         }
       )
@@ -90,7 +90,7 @@ function CommunityFeed() {
       const response = await axios.get('http://localhost:8080/api/users/me', {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
       })
       setMe(response.data)
@@ -107,7 +107,7 @@ function CommunityFeed() {
       const response = await axios.get(`${API_GET_POSTS}/${communityId}`, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
       })
       setPosts(response.data)
@@ -121,7 +121,7 @@ function CommunityFeed() {
   const createPost = async (e) => {
     e.preventDefault()
 
-    if (!authenticatedUser) {
+    if (!user) {
       console.error('Nessun utente autenticato!')
       return
     }
@@ -147,7 +147,7 @@ function CommunityFeed() {
       await axios.post('http://localhost:8080/api/posts', formData, {
         headers: {
           //   'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${authenticatedUser.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
       })
       setContent('')
@@ -167,7 +167,7 @@ function CommunityFeed() {
   }
 
   const leaveCommunity = async () => {
-    if (!authenticatedUser) {
+    if (!user) {
       console.error('Nessun utente autenticato!')
       return
     }
@@ -176,10 +176,10 @@ function CommunityFeed() {
       return
     }
     try {
-      await axios.delete(`${API_LEAVE_COMMUNITY}/${me.id}/${communityId}`, {
+      await axios.delete(`${API_LEAVE_COMMUNITY}/${user.id}/${communityId}`, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
       })
       setTimeout(() => {
@@ -215,7 +215,7 @@ function CommunityFeed() {
         {community && (
           <Col
             md={3}
-            className='border-end sidebar-left d-none d-md-block'
+            className='d-md-block d-none border-end sidebar-left'
             style={{
               background: `linear-gradient(0deg, ${community.color} 0%, transparent 100%)`,
             }}
@@ -260,7 +260,7 @@ function CommunityFeed() {
 
         <Button
           variant='secondary'
-          className='d-md-none btn-primary mb-3 text-start'
+          className='d-md-none btn-primary text-start mb-3'
           onClick={handleShowSidebar}
         >
           <ArrowBigLeft size={20} /> Profilo
@@ -303,7 +303,7 @@ function CommunityFeed() {
         </Offcanvas>
 
         <Col
-          className='d-flex flex-column align-items-center col-feed-post'
+          className='col-feed-post d-flex flex-column align-items-center py-3'
           md={6}
           sm={12}
         >
@@ -372,15 +372,15 @@ function CommunityFeed() {
         {community && (
           <Col
             md={3}
-            className='sidebar-right border-start order-md-2 order-last'
+            className='order-last order-md-2 border-start sidebar-right'
             style={{
               background: `linear-gradient(0deg, ${community.color} 0%, transparent 100%)`,
             }}
           >
-            <Card className='border-0 bg-transparent'>
+            <Card className='bg-transparent border-0'>
               <Button
                 onClick={() => setShowLeaveModal(true)}
-                className='d-block mx-auto my-3 leave-community-button'
+                className='d-block leave-community-button mx-auto my-3'
               >
                 Lascia Community
               </Button>
@@ -409,7 +409,7 @@ function CommunityFeed() {
                         alt='avatar'
                         className='rounded-circle member-avatar'
                       />
-                      <div className='ms-2'>
+                      <div className='member-email-div ms-2'>
                         <strong className='member-name'>
                           {member.firstName} {member.lastName}
                         </strong>
@@ -425,7 +425,7 @@ function CommunityFeed() {
               <Modal.Title className='text-center'>
                 Vuoi davvero abbandonare la community?
               </Modal.Title>
-              <Modal.Body className=' d-flex justify-content-between'>
+              <Modal.Body className='d-flex justify-content-between'>
                 <Button onClick={handleCloseLeaveModal} variant='secondary'>
                   Annulla
                 </Button>

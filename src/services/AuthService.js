@@ -5,8 +5,30 @@ const API_URL = 'http://localhost:8080/api/auth/'
 
 const login = async (credentials) => {
   const response = await axios.post(`${API_URL}login`, credentials)
+
   if (response.data.token) {
-    localStorage.setItem('user', JSON.stringify(response.data))
+    const token = response.data.token
+    const decodedToken = jwtDecode(token)
+
+    const userResponse = await axios.get(`http://localhost:8080/api/users/me`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    const userData = userResponse.data
+
+    const completeUser = {
+      token,
+      id: userData.id,
+      role:
+        decodedToken.roles && decodedToken.roles.includes('ROLE_ADMIN')
+          ? 'ADMIN'
+          : 'USER',
+    }
+
+    localStorage.setItem('user', JSON.stringify(completeUser))
+    return completeUser
   }
 
   return response.data
@@ -14,13 +36,9 @@ const login = async (credentials) => {
 
 const getUserRole = () => {
   const user = JSON.parse(localStorage.getItem('user'))
-
   if (user && user.token) {
     const decodedToken = jwtDecode(user.token)
-    if (decodedToken.roles.includes('ROLE_ADMIN')) {
-      return 'ADMIN'
-    }
-    return 'USER'
+    return decodedToken.roles.includes('ROLE_ADMIN') ? 'ADMIN' : 'USER'
   }
   return null
 }

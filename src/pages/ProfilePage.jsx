@@ -1,24 +1,27 @@
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Card, Col, Container, ListGroup, Row } from 'react-bootstrap'
 import PostCard from '../components/PostCard'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import '../assets/css/ProfilePage.css'
+import { AuthContext } from '../context/AuthContext'
 
 function ProfilePage() {
-  const { userId } = useParams()
+  const { user } = useContext(AuthContext)
 
-  const rawUser = localStorage.getItem('user')
-  const authenticatedUser = rawUser ? JSON.parse(rawUser) : null
-
+  const navigate = useNavigate()
   const [isError, setIsError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [me, setMe] = useState({})
   const [posts, setPosts] = useState(null)
   const [myCommunities, setMyCommunities] = useState([])
 
+  if (!user) {
+    navigate('/')
+  }
+
   const getMe = async () => {
-    if (!authenticatedUser) {
+    if (!user) {
       console.log('Nessun utente autenticato!')
       return
     }
@@ -27,7 +30,7 @@ function ProfilePage() {
       const response = await axios.get('http://localhost:8080/api/users/me', {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
       })
 
@@ -41,7 +44,7 @@ function ProfilePage() {
   }
 
   const getMyCommunities = async () => {
-    if (!authenticatedUser) {
+    if (!user) {
       console.log('Nessun utente autenticato!')
       return
     }
@@ -52,7 +55,7 @@ function ProfilePage() {
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${authenticatedUser.token}`,
+            Authorization: `Bearer ${user.token}`,
           },
         }
       )
@@ -67,22 +70,20 @@ function ProfilePage() {
   }
 
   const getMyPosts = async () => {
-    if (!authenticatedUser) {
+    if (!user) {
       console.log('Nessun utente autenticato!')
       return
     }
-
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/posts/user/${userId}`,
+        `http://localhost:8080/api/posts/user/${user.id}`,
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${authenticatedUser.token}`,
+            Authorization: `Bearer ${user.token}`,
           },
         }
       )
-
       setPosts(response.data)
       setIsLoading(false)
     } catch (error) {
@@ -103,9 +104,9 @@ function ProfilePage() {
     const createdDate = new Date(createdAt)
     const now = new Date()
     const diffTime = Math.abs(now - createdDate)
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) // Giorni totali
-    const diffMonths = Math.floor(diffDays / 30) // Approssimazione mesi
-    const diffYears = Math.floor(diffMonths / 12) // Anni
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+    const diffMonths = Math.floor(diffDays / 30)
+    const diffYears = Math.floor(diffMonths / 12)
 
     if (diffYears >= 1) {
       return `Membro di NicheNetwork da ${diffYears} ${
@@ -126,10 +127,10 @@ function ProfilePage() {
   if (isError || !me) return <p>Errore nel caricamento del profilo</p>
 
   return (
-    <Container className='mt-4 p-3' fluid>
+    <Container className='p-3 mt-4' fluid>
       <Row>
         <Col md={4}>
-          <Card className='profile-card text-center'>
+          <Card className='text-center profile-card'>
             <div className='profile-avatar-container'>
               <Card.Img
                 variant='top'
@@ -153,7 +154,7 @@ function ProfilePage() {
             </ListGroup>
           </Card>
 
-          <Card className='my-3 text-center community-card'>
+          <Card className='text-center community-card my-3'>
             <Card.Title className='community-title'>
               Le mie Community
             </Card.Title>
