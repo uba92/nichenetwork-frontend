@@ -39,6 +39,7 @@ function CommunityFeed() {
   const [numberOfMembers, setNumberOfMembers] = useState(0)
   const [showLeaveModal, setShowLeaveModal] = useState(false)
   const [communityMembers, setCommunityMembers] = useState([])
+  const [suggestedMembers, setSuggestedMembers] = useState([])
 
   const [showSidebar, setShowSidebar] = useState(false)
   const handleCloseSidebar = () => setShowSidebar(false)
@@ -206,6 +207,14 @@ function CommunityFeed() {
     fetchData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    if (communityMembers && me?.id) {
+      const filtered = communityMembers.filter((member) => member.id !== me.id)
+      const shuffled = [...filtered].sort(() => Math.random() - 0.5).slice(0, 3)
+      setSuggestedMembers(shuffled)
+    }
+  }, [communityMembers, me?.id])
 
   return (
     <Container fluid className='p-3' style={{ height: '100vh' }}>
@@ -377,7 +386,7 @@ function CommunityFeed() {
               background: `linear-gradient(0deg, ${community.color} 0%, transparent 100%)`,
             }}
           >
-            <Card className='bg-transparent border-0'>
+            <Card className='bg-transparent border-0 text-light'>
               <Button
                 onClick={() => setShowLeaveModal(true)}
                 className='d-block leave-community-button mx-auto my-3'
@@ -392,31 +401,25 @@ function CommunityFeed() {
               </Card.Body>
               <ListGroup className='suggested-members'>
                 <h5 className='mb-3'>Membri suggeriti</h5>
-                {communityMembers
-                  ?.filter((member) => member.id !== me.id)
-                  .sort(() => Math.random() - 0.5)
-                  .slice(0, 3)
-                  .map((member) => (
-                    <ListGroup.Item
-                      key={member.id}
-                      className='d-flex align-items-center suggested-member-item'
-                      onClick={() => {
-                        navigate(`/home/user/${member.id}`)
-                      }}
-                    >
-                      <img
-                        src={member.avatar || '/img/avatar-profilo.jpg'}
-                        alt='avatar'
-                        className='rounded-circle member-avatar'
-                      />
-                      <div className='member-email-div ms-2'>
-                        <strong className='member-name'>
-                          {member.firstName} {member.lastName}
-                        </strong>
-                        <p className='member-email'>{member.email}</p>
-                      </div>
-                    </ListGroup.Item>
-                  ))}
+                {suggestedMembers.map((member) => (
+                  <ListGroup.Item
+                    key={member.id}
+                    className='d-flex align-items-center suggested-member-item'
+                    onClick={() => navigate(`/home/user/${member.id}`)}
+                  >
+                    <img
+                      src={member.avatar || '/img/avatar-profilo.jpg'}
+                      alt='avatar'
+                      className='rounded-circle member-avatar'
+                    />
+                    <div className='member-email-div ms-2'>
+                      <strong className='member-name'>
+                        {member.firstName} {member.lastName}
+                      </strong>
+                      <p className='member-email'>{member.email}</p>
+                    </div>
+                  </ListGroup.Item>
+                ))}
               </ListGroup>
             </Card>
 

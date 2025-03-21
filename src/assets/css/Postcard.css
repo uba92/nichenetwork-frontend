@@ -1,5 +1,6 @@
 .post-card {
-  background: #fff;
+  background: #444;
+  color: white;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 15px;
@@ -32,17 +33,17 @@
 .postcard-username {
   font-weight: bold;
   font-size: 1.1rem;
-  color: #333;
+  color: whitesmoke;
 }
 
 .postcard-date {
   font-size: 0.9rem;
-  color: #777;
+  color: #999;
 }
 
 .postcard-content {
   font-size: 1rem;
-  color: #555;
+  color: #ddd;
   margin-bottom: 10px;
 }
 
@@ -58,9 +59,6 @@
 }
 
 .postcard-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   padding-top: 10px;
   margin-top: 10px;
   border-top: 1px solid #eee;
@@ -75,18 +73,6 @@
   align-items: center;
   gap: 5px;
   transition: color 0.2s ease-in-out;
-}
-
-.like-button {
-  color: black;
-}
-
-.like-button.liked {
-  color: red;
-}
-
-.like-button:hover {
-  color: darkred;
 }
 
 .comment-button {

@@ -291,193 +291,189 @@ function UserProfile() {
   if (isLoading) return <p>Caricamento...</p>
   if (isError || !me) return <p>Errore nel caricamento del profilo</p>
   return (
-    <>
-      <Container fluid>
-        <Row>
-          <Col md={4}>
-            <Card className='text-center mt-3 profile-card'>
-              <div className='profile-avatar-container'>
-                <Card.Img
-                  variant='top'
-                  src={selectedUser?.avatar || '/img/avatar-profilo.jpg'}
-                  className='profile-avatar'
-                />
+    <Container className=' mt-3' fluid>
+      <Row className=' d-flex justify-content-center'>
+        <Col xs={12} md={10} className='profile-content'>
+          <Card className='text-center profile-card'>
+            <div className='profile-avatar-container'>
+              <Card.Img
+                variant='top'
+                src={selectedUser?.avatar || '/img/avatar-profilo.jpg'}
+                className='profile-avatar'
+              />
+            </div>
+            <Card.Body>
+              <Card.Title className='profile-name'>
+                {selectedUser?.firstName} {selectedUser?.lastName}
+              </Card.Title>
+              <Card.Text className='text-light profile-bio'>
+                {selectedUser?.bio || 'Nessuna bio disponibile.'}
+              </Card.Text>
+            </Card.Body>
+            <ListGroup className='profile-info'>
+              <ListGroup.Item className='text-light'>
+                Email: {selectedUser?.email}
+              </ListGroup.Item>
+              <ListGroup.Item className='text-light py-3'>
+                {getTimeSinceRegistration(selectedUser?.createdAt)}
+              </ListGroup.Item>
+              <ListGroup.Item className='text-light'>
+                Post: {posts?.totalElements}
+              </ListGroup.Item>
+            </ListGroup>
+          </Card>
+        </Col>
+      </Row>
+      <Row>
+        {posts &&
+          posts.content.map((post) => (
+            <Col key={post.id} xs={6} sm={4} md={3} className='mt-3'>
+              <div
+                className={`post-thumbnail ${post.image ? '' : 'text-post'}`}
+                onClick={() => {
+                  handlePostClick(post)
+                }}
+              >
+                {post.image ? (
+                  <img src={post.image} alt='Post' />
+                ) : (
+                  <p className='post-text-preview'>
+                    {post.content.length > 50
+                      ? post.content.substring(0, 50) + '...'
+                      : post.content}
+                  </p>
+                )}
               </div>
-              <Card.Body>
-                <Card.Title className='profile-name'>
-                  {selectedUser?.firstName} {selectedUser?.lastName}
-                </Card.Title>
-                <Card.Text className='profile-bio'>
-                  {selectedUser?.bio || 'Nessuna bio disponibile.'}
-                </Card.Text>
-              </Card.Body>
-              <ListGroup className='list-group-flush profile-info'>
-                <ListGroup.Item>Email: {selectedUser?.email}</ListGroup.Item>
-                <ListGroup.Item>
-                  {getTimeSinceRegistration(selectedUser?.createdAt)}
-                </ListGroup.Item>
-              </ListGroup>
-            </Card>
-          </Col>
-          <Col md={8}>
-            <Row>
-              {posts &&
-                posts.content.map((post) => (
-                  <Col key={post.id} xs={6} sm={4} md={3}>
-                    <div
-                      className={`post-thumbnail ${
-                        post.image ? '' : 'text-post'
-                      }`}
-                      onClick={() => {
-                        handlePostClick(post)
-                      }}
-                    >
-                      {post.image ? (
-                        <img src={post.image} alt='Post' />
-                      ) : (
-                        <p className='post-text-preview'>
-                          {post.content.length > 50
-                            ? post.content.substring(0, 50) + '...'
-                            : post.content}
-                        </p>
-                      )}
-                    </div>
-                  </Col>
-                ))}
-            </Row>
-          </Col>
-        </Row>
+            </Col>
+          ))}
+      </Row>
 
-        <Modal show={showModal} onHide={handleCloseModal} centered size='lg'>
-          <Container
-            className='d-flex flex-row'
-            style={{ boxShadow: '5px 5px 5px rgb(0, 0, 0, 0.2)' }}
-          >
-            <Row>
-              <Col xs={12} lg={7}>
-                <Modal.Header className='border border-0'>
-                  <Modal.Title className='d-flex align-items-center justify-content-between'>
-                    <img
-                      src={selectedUser?.avatar}
-                      alt='user-avatar'
-                      className='post-details-user-avatar'
-                    />
-                    <span className='ms-3'>{selectedUser?.username}</span>
-                  </Modal.Title>
-                </Modal.Header>
-                <Modal.Body className='modal-body'>
-                  {selectedPost && selectedPost.image ? (
-                    <img
-                      src={selectedPost.image}
-                      alt='Post'
-                      className='modal-image img-fluid'
-                    />
-                  ) : (
-                    <p className='modal-text'>{selectedPost?.content}</p>
-                  )}
-                </Modal.Body>
-                <Modal.Footer className='border border-0 justify-content-center p-0'>
-                  <div className='post-details-actions'>
-                    <span>{selectedPost?.content}</span>
-                    <button
-                      className={`like-button ${likedByUser ? 'liked' : ''}`}
-                      onClick={handleLike}
-                    >
-                      <Heart size={20} color={likedByUser ? 'red' : 'black'} />
-                      <span>{likeCount}</span>
-                    </button>
-                  </div>
-                </Modal.Footer>
-              </Col>
-              <Col xs={12} lg={5} className='comment-section'>
-                <Modal.Header>
-                  <Modal.Title
-                    style={{ color: 'gray' }}
-                    className='d-flex align-items-center justify-content-center w-100'
+      <Modal show={showModal} onHide={handleCloseModal} centered size='lg'>
+        <Container
+          className='d-flex flex-row'
+          style={{ boxShadow: '5px 5px 5px rgb(0, 0, 0, 0.2)' }}
+        >
+          <Row>
+            <Col xs={12} lg={7}>
+              <Modal.Header className='border border-0'>
+                <Modal.Title className='d-flex align-items-center justify-content-between'>
+                  <img
+                    src={selectedUser?.avatar}
+                    alt='user-avatar'
+                    className='post-details-user-avatar'
+                  />
+                  <span className='text-black ms-3'>
+                    {selectedUser?.username}
+                  </span>
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body className='modal-body'>
+                {selectedPost && selectedPost.image ? (
+                  <img
+                    src={selectedPost.image}
+                    alt='Post'
+                    className='modal-image img-fluid'
+                  />
+                ) : (
+                  <p className='modal-text'>{selectedPost?.content}</p>
+                )}
+              </Modal.Body>
+              <Modal.Footer className='border border-0 justify-content-center p-0'>
+                <div className='post-details-actions'>
+                  <span>{selectedPost?.content}</span>
+                  <button
+                    className={`like-button ${likedByUser ? 'liked' : ''}`}
+                    onClick={handleLike}
                   >
-                    <MessageCircle size={20} /> <span>{comments.length}</span>
-                  </Modal.Title>
-                </Modal.Header>
-                <Modal.Body
-                  className='d-flex flex-column'
-                  style={{ maxHeight: '80vh' }}
+                    <Heart size={20} color={likedByUser ? 'red' : 'black'} />
+                    <span>{likeCount}</span>
+                  </button>
+                </div>
+              </Modal.Footer>
+            </Col>
+            <Col xs={12} lg={5} className='comment-section'>
+              <Modal.Header>
+                <Modal.Title
+                  style={{ color: 'gray' }}
+                  className='d-flex align-items-center justify-content-center w-100'
                 >
-                  <div className='d-flex flex-column mb-3'>
-                    <Form onSubmit={handleAddComment}>
-                      <InputGroup>
-                        <Form.Control
-                          onChange={(e) => setNewComment(e.target.value)}
-                          value={newComment}
-                          as='textarea'
-                          style={{ resize: 'none' }}
-                        />
-                      </InputGroup>
-                      <Button type='submit' className='w-100'>
-                        commenta
-                      </Button>
-                    </Form>
-                  </div>
-                  <div className='comment-list'>
-                    {comments.length > 0 ? (
-                      comments.map((comment) => {
-                        const isExpanded = expandedComments[comment.id]
-                        const text = comment.content
-                        const shouldTruncate = text.length > commentMaxChar
-                        const displayText =
-                          shouldTruncate && !isExpanded
-                            ? text.slice(0, commentMaxChar) + '...'
-                            : text
-                        return (
-                          <div key={comment.id} className='comment mb-2'>
-                            <strong className='d-block'>
-                              {comment.author.username}
-                            </strong>
-                            <span>{displayText}</span>
-                            {shouldTruncate && (
-                              <button
-                                className='btn btn-link m-0 p-0'
-                                onClick={() => toggleComment(comment.id)}
-                              >
-                                {isExpanded ? 'Riduci' : 'Espandi'}
-                              </button>
-                            )}
-                            <Dropdown
-                              style={{
-                                backgroundColor: 'transparent',
-                                border: 'none',
-                                color: 'gray',
-                              }}
+                  <MessageCircle size={20} /> <span>{comments?.length}</span>
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body className='d-flex flex-column'>
+                <div className='d-flex flex-column mb-3'>
+                  <Form onSubmit={handleAddComment}>
+                    <InputGroup>
+                      <Form.Control
+                        onChange={(e) => setNewComment(e.target.value)}
+                        value={newComment}
+                        as='textarea'
+                        style={{ resize: 'none' }}
+                      />
+                    </InputGroup>
+                    <Button type='submit' className='w-100'>
+                      commenta
+                    </Button>
+                  </Form>
+                </div>
+                <div className='comment-list'>
+                  {comments.length > 0 ? (
+                    comments.map((comment) => {
+                      const isExpanded = expandedComments[comment.id]
+                      const text = comment.content
+                      const shouldTruncate = text.length > commentMaxChar
+                      const displayText =
+                        shouldTruncate && !isExpanded
+                          ? text.slice(0, commentMaxChar) + '...'
+                          : text
+                      return (
+                        <div key={comment.id} className='comment mb-2'>
+                          <strong className='d-block'>
+                            {comment.author.username}
+                          </strong>
+                          <span>{displayText}</span>
+                          {shouldTruncate && (
+                            <button
+                              className='btn btn-link m-0 p-0'
+                              onClick={() => toggleComment(comment.id)}
                             >
-                              <Dropdown.Toggle className='dropdown-btn'>
-                                <MoreVerticalIcon />
-                              </Dropdown.Toggle>
-                              <Dropdown.Menu className='dropdown-menu'>
-                                <Dropdown.Item
-                                  onClick={() =>
-                                    handleDeleteComment(comment?.id)
-                                  }
-                                  className='dropdown-item'
-                                >
-                                  Elimina
-                                </Dropdown.Item>
-                              </Dropdown.Menu>
-                            </Dropdown>
-                          </div>
-                        )
-                      })
-                    ) : (
-                      <p className='text-muted'>
-                        Nessun Commento per questo post
-                      </p>
-                    )}
-                  </div>
-                </Modal.Body>
-              </Col>
-            </Row>
-          </Container>
-        </Modal>
-      </Container>
-    </>
+                              {isExpanded ? 'Riduci' : 'Espandi'}
+                            </button>
+                          )}
+                          <Dropdown
+                            style={{
+                              backgroundColor: 'transparent',
+                              border: 'none',
+                              color: 'gray',
+                            }}
+                          >
+                            <Dropdown.Toggle className='dropdown-btn'>
+                              <MoreVerticalIcon />
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu className='dropdown-menu'>
+                              <Dropdown.Item
+                                onClick={() => handleDeleteComment(comment?.id)}
+                                className='dropdown-item'
+                              >
+                                Elimina
+                              </Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        </div>
+                      )
+                    })
+                  ) : (
+                    <p className='text-muted'>
+                      Nessun Commento per questo post
+                    </p>
+                  )}
+                </div>
+              </Modal.Body>
+            </Col>
+          </Row>
+        </Container>
+      </Modal>
+    </Container>
   )
 }
 

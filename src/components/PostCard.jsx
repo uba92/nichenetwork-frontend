@@ -16,6 +16,12 @@ function PostCard({ post }) {
   const [showComments, setShowComments] = useState(false)
   const [newComment, setNewComment] = useState('')
 
+  const [isEditing, setIsEditing] = useState(false)
+  const [editedContent, setEditedContent] = useState(post.content)
+
+  const [editingCommentId, setEditingCommentId] = useState(null)
+  const [editedCommentContent, setEditedCommentContent] = useState('')
+
   const fetchLikes = async (userId) => {
     try {
       const response = await axios.get(
@@ -145,6 +151,46 @@ function PostCard({ post }) {
     })
   }
 
+  const handleUpdatePost = async () => {
+    try {
+      await axios.put(
+        `http://localhost:8080/api/posts/${post.id}`,
+        {
+          content: editedContent,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
+
+      setIsEditing(false)
+      post.content = editedContent // aggiorna localmente per evitare ricarica
+    } catch (error) {
+      console.error('Errore nella modifica del post:', error)
+    }
+  }
+
+  const handleUpdateComment = async (commentId) => {
+    try {
+      await axios.put(
+        `http://localhost:8080/api/comments/${commentId}/user/${userId}`,
+        null,
+        {
+          headers: { Authorization: `Bearer ${user.token}` },
+          params: { newContent: editedCommentContent },
+        }
+      )
+
+      setEditingCommentId(null)
+      setEditedCommentContent('')
+      fetchComments()
+    } catch (error) {
+      console.error('Errore aggiornamento commento:', error)
+    }
+  }
+
   const detectLinks = (text) => {
     if (!text) return ''
 
@@ -179,11 +225,48 @@ function PostCard({ post }) {
           <span className='postcard-username'>{post.author.username}</span>
         </div>
         <div className='postcard-date'>{formatDate(post.createdAt)}</div>
+        {user.id === post.author.id && (
+          <button
+            className='btn btn-sm btn-outline-light ms-2'
+            onClick={() => setIsEditing(true)}
+          >
+            Modifica
+          </button>
+        )}
       </Card.Header>
       <Card.Body>
-        <Card.Text className='postcard-content'>
-          {detectLinks(post.content)}
-        </Card.Text>
+        {isEditing ? (
+          <div className='edit-post-form'>
+            <textarea
+              className='form-control mb-2'
+              rows={3}
+              value={editedContent}
+              onChange={(e) => setEditedContent(e.target.value)}
+            />
+            <div className='d-flex gap-2'>
+              <button
+                className='btn btn-success btn-sm'
+                onClick={handleUpdatePost}
+              >
+                Salva
+              </button>
+              <button
+                className='btn btn-secondary btn-sm'
+                onClick={() => {
+                  setIsEditing(false)
+                  setEditedContent(post.content)
+                }}
+              >
+                Annulla
+              </button>
+            </div>
+          </div>
+        ) : (
+          <Card.Text className='postcard-content'>
+            {detectLinks(post.content)}
+          </Card.Text>
+        )}
+
         {post.image && (
           <Card.Img className='postcard-image' variant='top' src={post.image} />
         )}
@@ -192,8 +275,10 @@ function PostCard({ post }) {
             className={`like-button ${likedByUser ? 'liked' : ''}`}
             onClick={handleLike}
           >
-            <Heart size={20} color={likedByUser ? 'red' : 'black'} />
-            <span>{likeCount}</span>
+            <Heart size={20} color={likedByUser ? 'red' : '#ddd'} />
+            <span style={{ color: likedByUser ? 'red' : '#ddd' }}>
+              {likeCount}
+            </span>
           </button>
           <button
             className='comment-button'
@@ -211,9 +296,20 @@ function PostCard({ post }) {
                   key={comment.id}
                   className='d-flex justify-content-between comment'
                 >
-                  <div>
+                  <div className='text-black'>
                     <strong>{comment.author.username}:</strong>{' '}
-                    {comment.content}
+                    {editingCommentId === comment.id ? (
+                      <textarea
+                        className='form-control'
+                        rows={2}
+                        value={editedCommentContent}
+                        onChange={(e) =>
+                          setEditedCommentContent(e.target.value)
+                        }
+                      />
+                    ) : (
+                      comment.content
+                    )}
                   </div>
                   <Dropdown>
                     <Dropdown.Toggle
@@ -224,14 +320,46 @@ function PostCard({ post }) {
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu className='comment-dropdown-menu'>
-                      <Dropdown.Item
-                        className='text-light comment-dropdown-item'
-                        onClick={() => handleDeleteComment(comment.id)}
-                      >
-                        Elimina
-                      </Dropdown.Item>
+                      {comment.author.id === userId && (
+                        <>
+                          <Dropdown.Item
+                            className='text-light comment-dropdown-item'
+                            onClick={() => handleDeleteComment(comment.id)}
+                          >
+                            Elimina
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            className='text-light comment-dropdown-item'
+                            onClick={() => {
+                              setEditingCommentId(comment.id)
+                              setEditedCommentContent(comment.content)
+                            }}
+                          >
+                            Modifica
+                          </Dropdown.Item>
+                        </>
+                      )}
                     </Dropdown.Menu>
                   </Dropdown>
+                  {editingCommentId === comment.id && (
+                    <div className='d-flex gap-2 mt-2'>
+                      <button
+                        className='btn btn-success btn-sm'
+                        onClick={() => handleUpdateComment(comment.id)}
+                      >
+                        Salva
+                      </button>
+                      <button
+                        className='btn btn-secondary btn-sm'
+                        onClick={() => {
+                          setEditingCommentId(null)
+                          setEditedCommentContent('')
+                        }}
+                      >
+                        Annulla
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))
             ) : (

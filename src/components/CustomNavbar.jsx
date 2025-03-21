@@ -62,18 +62,19 @@ function CustomNavbar() {
             </Nav.Link>
             <Nav.Link
               as={Link}
-              to={`/home/profile/${user.id}`}
-              className='nav-link-custom'
-            >
-              Profilo
-            </Nav.Link>
-            <Nav.Link
-              as={Link}
               to={`/home/profile/settings/${user.id}`}
               className='nav-link-custom'
             >
               Impostazioni
             </Nav.Link>
+            <Nav.Link
+              as={Link}
+              to={`/home/profile/${user.id}`}
+              className='nav-link-custom'
+            >
+              Profilo
+            </Nav.Link>
+
             <Nav.Link
               onClick={() => setShowModal(true)}
               style={{ cursor: 'pointer' }}
