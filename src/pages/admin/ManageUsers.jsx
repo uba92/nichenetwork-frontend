@@ -13,8 +13,10 @@ import { useEffect, useState } from 'react'
 import CreateAdminModal from './CreateAdminModal'
 import { useNavigate } from 'react-router-dom'
 
-const API_URL = 'http://localhost:8080/api/admin/users'
-const API_URL_ROLE = 'http://localhost:8080/api/admin/users'
+const API_URL =
+  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/admin/users'
+const API_URL_ROLE =
+  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/admin/users'
 function ManageUsers() {
   const [users, setUsers] = useState(null)
   const [isError, setIsError] = useState(false)
@@ -33,7 +35,7 @@ function ManageUsers() {
 
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/users/search?query=${searchQuery}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/search?query=${searchQuery}`,
         {
           headers: {
             'Content-Type': 'applicatioin/json',

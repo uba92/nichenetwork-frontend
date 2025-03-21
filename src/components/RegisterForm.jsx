@@ -119,9 +119,11 @@ function RegisterForm() {
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>Registrazione completata!</Modal.Title>
+          <Modal.Title className='text-black'>
+            Registrazione completata!
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className='text-black'>
           Il tuo account è stato creato con successo. Ora puoi accedere.
         </Modal.Body>
         <Modal.Footer>

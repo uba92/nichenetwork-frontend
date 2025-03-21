@@ -15,8 +15,10 @@ import debounce from 'lodash.debounce'
 import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 
-const API_URL = 'http://localhost:8080/api/communities'
-const API_URL_JOIN = 'http://localhost:8080/api/community-members'
+const API_URL =
+  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/communities'
+const API_URL_JOIN =
+  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/community-members'
 
 function DiscoverCommunities() {
   const { user } = useContext(AuthContext)
@@ -84,16 +86,19 @@ function DiscoverCommunities() {
 
   const getMe = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/users/me', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token}`,
-        },
-      })
+      const response = await axios.get(
+        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me',
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
       setMe(response.data)
 
       const communitiesResponse = await axios.get(
-        'http://localhost:8080/api/users/me/communities',
+        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me/communities',
         {
           headers: {
             'Content-Type': 'application/json',

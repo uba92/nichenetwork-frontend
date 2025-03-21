@@ -14,7 +14,8 @@ import {
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
-const API_URL = 'http://localhost:8080/api/users/me/communities'
+const API_URL =
+  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me/communities'
 
 function CommunityList() {
   const { user } = useContext(AuthContext)

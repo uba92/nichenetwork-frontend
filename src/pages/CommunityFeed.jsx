@@ -18,10 +18,14 @@ import '../assets/css/CommunityFeed.css'
 import PostCard from '../components/PostCard'
 import { ArrowBigLeft } from 'lucide-react'
 import { AuthContext } from '../context/AuthContext'
+import UserSearch from '../components/UserSearch'
 
-const API_GET_POSTS = 'http://localhost:8080/api/posts/community'
-const API_GET_COMMUNITY = 'http://localhost:8080/api/communities'
-const API_LEAVE_COMMUNITY = 'http://localhost:8080/api/community-members/leave'
+const API_GET_POSTS =
+  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/posts/community'
+const API_GET_COMMUNITY =
+  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/communities'
+const API_LEAVE_COMMUNITY =
+  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/community-members/leave'
 
 function CommunityFeed() {
   const { communityId } = useParams()
@@ -67,7 +71,7 @@ function CommunityFeed() {
   const getMembers = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/community-members/${communityId}/members`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/community-members/${communityId}/members`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -88,12 +92,15 @@ function CommunityFeed() {
 
   const getMe = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/users/me', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token}`,
-        },
-      })
+      const response = await axios.get(
+        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me',
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
       setMe(response.data)
       setIsLoading(false)
     } catch (error) {
@@ -145,12 +152,16 @@ function CommunityFeed() {
 
       formData.append('communityId', communityId)
 
-      await axios.post('http://localhost:8080/api/posts', formData, {
-        headers: {
-          //   'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${user.token}`,
-        },
-      })
+      await axios.post(
+        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/posts',
+        formData,
+        {
+          headers: {
+            //   'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
       setContent('')
       setImageUrl('')
 
@@ -264,6 +275,8 @@ function CommunityFeed() {
                 </Card.Body>
               </Card>
             )}
+
+            <UserSearch />
           </Col>
         )}
 
@@ -400,7 +413,7 @@ function CommunityFeed() {
                 <Card.Text className='py-2'>{numberOfMembers}</Card.Text>
               </Card.Body>
               <ListGroup className='suggested-members'>
-                <h5 className='mb-3'>Membri suggeriti</h5>
+                <h5 className='mb-3 text-black'>Membri suggeriti</h5>
                 {suggestedMembers.map((member) => (
                   <ListGroup.Item
                     key={member.id}
@@ -425,7 +438,7 @@ function CommunityFeed() {
 
             <Modal show={showLeaveModal} onHide={handleCloseLeaveModal}>
               <Modal.Header closeButton></Modal.Header>
-              <Modal.Title className='text-center'>
+              <Modal.Title className='text-center text-black'>
                 Vuoi davvero abbandonare la community?
               </Modal.Title>
               <Modal.Body className='d-flex justify-content-between'>

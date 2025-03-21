@@ -13,7 +13,8 @@ import {
 import { useNavigate } from 'react-router-dom'
 import CreateCommunityModal from './CreateCommunityModal'
 
-const API_URL = 'http://localhost:8080/api/communities'
+const API_URL =
+  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/communities'
 function ManageCommunities() {
   const [communities, setCommunities] = useState([])
   const [isLoading, setIsLoading] = useState(true)

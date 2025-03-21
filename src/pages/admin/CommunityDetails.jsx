@@ -12,8 +12,10 @@ import {
 } from 'react-bootstrap'
 import { useNavigate, useParams } from 'react-router-dom'
 
-const API_URL = 'http://localhost:8080/api/communities'
-const API_URL_MEMBERS = 'http://localhost:8080/api/community-members'
+const API_URL =
+  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/communities'
+const API_URL_MEMBERS =
+  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/community-members'
 
 function CommunityDetails() {
   const { id } = useParams()

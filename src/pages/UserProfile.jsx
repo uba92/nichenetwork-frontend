@@ -45,12 +45,15 @@ function UserProfile() {
     }
 
     try {
-      const response = await axios.get('http://localhost:8080/api/users/me', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token}`,
-        },
-      })
+      const response = await axios.get(
+        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me',
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
 
       setMe(response.data)
       setIsLoading(false)
@@ -68,7 +71,7 @@ function UserProfile() {
     }
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/likes/post/${selectedPost.id}/count`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/likes/post/${selectedPost.id}/count`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -78,7 +81,7 @@ function UserProfile() {
       setLikeCount(response.data)
 
       const userLikeResponse = await axios.get(
-        `http://localhost:8080/api/likes/post/${selectedPost.id}/user/${user.id}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/likes/post/${selectedPost.id}/user/${user.id}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -100,7 +103,7 @@ function UserProfile() {
 
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/users/${userId}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/${userId}`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -125,7 +128,7 @@ function UserProfile() {
 
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/posts/user/${userId}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/posts/user/${userId}`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -176,7 +179,7 @@ function UserProfile() {
 
     try {
       await axios.post(
-        `http://localhost:8080/api/likes/post/${selectedPost.id}/user/${user.id}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/likes/post/${selectedPost.id}/user/${user.id}`,
         {},
         {
           headers: {
@@ -202,7 +205,7 @@ function UserProfile() {
 
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/comments/post/${selectedPost?.id}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/comments/post/${selectedPost?.id}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -227,7 +230,7 @@ function UserProfile() {
 
     try {
       await axios.post(
-        `http://localhost:8080/api/comments/post/${selectedPost?.id}/user/${user?.id}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/comments/post/${selectedPost?.id}/user/${user?.id}`,
         null,
         {
           headers: { Authorization: `Bearer ${user.token}` },
@@ -268,7 +271,7 @@ function UserProfile() {
   const handleDeleteComment = async (commentId) => {
     try {
       await axios.delete(
-        `http://localhost:8080/api/comments/${commentId}/user/${user?.id}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/comments/${commentId}/user/${user?.id}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,

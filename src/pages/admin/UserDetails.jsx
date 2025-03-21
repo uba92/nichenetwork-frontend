@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Container, Card, Spinner, Alert, Button } from 'react-bootstrap'
 
-const API_URL = 'http://localhost:8080/api/users'
+const API_URL =
+  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users'
 
 function UserDetails() {
   const { id } = useParams()

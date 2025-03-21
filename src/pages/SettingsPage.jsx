@@ -48,7 +48,7 @@ function SettingsPage() {
       formData.append('file', avatar)
 
       const response = await axios.put(
-        `http://localhost:8080/api/users/changeAvatar`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/changeAvatar`,
         formData,
         {
           headers: {
@@ -74,7 +74,7 @@ function SettingsPage() {
     }
     try {
       await axios.put(
-        'http://localhost:8080/api/users/updateProfile',
+        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/updateProfile',
         { bio },
         {
           headers: {
@@ -103,7 +103,7 @@ function SettingsPage() {
 
     try {
       await axios.put(
-        'http://localhost:8080/api/users/changePassword',
+        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/changePassword',
         { oldPassword, newPassword },
         {
           headers: {
@@ -148,7 +148,7 @@ function SettingsPage() {
         password: password,
       }
       const response = await axios.delete(
-        'http://localhost:8080/api/users/deleteUser',
+        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/deleteUser',
         {
           headers: {
             'Content-Type': 'application/json',

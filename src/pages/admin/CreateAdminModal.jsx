@@ -2,7 +2,8 @@ import axios from 'axios'
 import { useState } from 'react'
 import { Button, Form, Modal } from 'react-bootstrap'
 
-const API_CREATE_ADMIN = 'http://localhost:8080/api/admin'
+const API_CREATE_ADMIN =
+  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/admin'
 
 function CreateAdminModal({ show, handleClose, fetchUsers }) {
   const [username, setUsername] = useState('')
@@ -53,7 +54,7 @@ function CreateAdminModal({ show, handleClose, fetchUsers }) {
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header>
-        <Modal.Title>Crea un nuovo Admin</Modal.Title>
+        <Modal.Title className='text-black'>Crea un nuovo Admin</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>

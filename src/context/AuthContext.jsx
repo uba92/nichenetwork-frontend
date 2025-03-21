@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
           const parsedUser = JSON.parse(storedUser)
           const decodedToken = jwtDecode(parsedUser.token)
           const response = await axios.get(
-            'http://localhost:8080/api/users/me',
+            'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me',
             {
               headers: {
                 'Content-Type': 'application/json',

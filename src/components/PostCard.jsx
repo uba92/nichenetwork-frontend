@@ -25,7 +25,7 @@ function PostCard({ post }) {
   const fetchLikes = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/likes/post/${post.id}/count`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/likes/post/${post.id}/count`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -35,7 +35,7 @@ function PostCard({ post }) {
       setLikeCount(response.data)
 
       const userLikeResponse = await axios.get(
-        `http://localhost:8080/api/likes/post/${post.id}/user/${userId}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/likes/post/${post.id}/user/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -52,7 +52,7 @@ function PostCard({ post }) {
   const fetchComments = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/comments/post/${post.id}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/comments/post/${post.id}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -86,7 +86,7 @@ function PostCard({ post }) {
 
     try {
       await axios.post(
-        `http://localhost:8080/api/likes/post/${post.id}/user/${userId}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/likes/post/${post.id}/user/${userId}`,
         {},
         {
           headers: {
@@ -109,7 +109,7 @@ function PostCard({ post }) {
 
     try {
       await axios.post(
-        `http://localhost:8080/api/comments/post/${post.id}/user/${userId}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/comments/post/${post.id}/user/${userId}`,
         null,
 
         {
@@ -128,7 +128,7 @@ function PostCard({ post }) {
   const handleDeleteComment = async (commentId) => {
     try {
       await axios.delete(
-        `http://localhost:8080/api/comments/${commentId}/user/${userId}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/comments/${commentId}/user/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -154,7 +154,7 @@ function PostCard({ post }) {
   const handleUpdatePost = async () => {
     try {
       await axios.put(
-        `http://localhost:8080/api/posts/${post.id}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/posts/${post.id}`,
         {
           content: editedContent,
         },
@@ -166,7 +166,7 @@ function PostCard({ post }) {
       )
 
       setIsEditing(false)
-      post.content = editedContent // aggiorna localmente per evitare ricarica
+      post.content = editedContent
     } catch (error) {
       console.error('Errore nella modifica del post:', error)
     }
@@ -175,7 +175,7 @@ function PostCard({ post }) {
   const handleUpdateComment = async (commentId) => {
     try {
       await axios.put(
-        `http://localhost:8080/api/comments/${commentId}/user/${userId}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/comments/${commentId}/user/${userId}`,
         null,
         {
           headers: { Authorization: `Bearer ${user.token}` },

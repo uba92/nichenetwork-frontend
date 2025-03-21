@@ -2,7 +2,8 @@ import axios from 'axios'
 import { useState } from 'react'
 import { Alert, Button, Form, Modal, Spinner } from 'react-bootstrap'
 
-const API_URL = 'http://localhost:8080/api/communities'
+const API_URL =
+  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/communities'
 
 function CreateCommunityModal({ show, handleClose, getCommunities }) {
   const [name, setName] = useState('')
@@ -62,7 +63,9 @@ function CreateCommunityModal({ show, handleClose, getCommunities }) {
     <Modal show={show} onHide={handleClose}>
       {isError && <Alert variant='danger'>{isError}</Alert>}
       <Modal.Header>
-        <Modal.Title>Crea una nuova Community</Modal.Title>
+        <Modal.Title className='text-black'>
+          Crea una nuova Community
+        </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>

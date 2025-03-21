@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 
-const API_URL = 'http://localhost:8080/api/auth/'
+const API_URL =
+  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/auth/'
 
 const login = async (credentials) => {
   const response = await axios.post(`${API_URL}login`, credentials)
@@ -10,12 +11,15 @@ const login = async (credentials) => {
     const token = response.data.token
     const decodedToken = jwtDecode(token)
 
-    const userResponse = await axios.get(`http://localhost:8080/api/users/me`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    const userResponse = await axios.get(
+      `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
     const userData = userResponse.data
 
     const completeUser = {

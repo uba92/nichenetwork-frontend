@@ -27,12 +27,15 @@ function ProfilePage() {
     }
 
     try {
-      const response = await axios.get('http://localhost:8080/api/users/me', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token}`,
-        },
-      })
+      const response = await axios.get(
+        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me',
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
 
       setMe(response.data)
       setIsLoading(false)
@@ -51,7 +54,7 @@ function ProfilePage() {
 
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/users/me/communities`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me/communities`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -76,7 +79,7 @@ function ProfilePage() {
     }
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/posts/user/${user.id}`,
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/posts/user/${user.id}`,
         {
           headers: {
             'Content-Type': 'application/json',
