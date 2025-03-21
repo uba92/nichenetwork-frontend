@@ -227,6 +227,25 @@ function CommunityFeed() {
     }
   }, [communityMembers, me?.id])
 
+  useEffect(() => {
+    axios
+      .get(
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/communities/${communityId}`,
+        {
+          headers: { Authorization: `Bearer ${user.token}` },
+        }
+      )
+      .then((response) => {
+        setCommunity(response.data)
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 403) {
+          navigate('/') // 🔒 Se non iscritto, manda alla home
+        }
+      })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [communityId])
+
   return (
     <Container fluid className='p-3' style={{ height: '100vh' }}>
       {isError && <p>{isError}</p>}
