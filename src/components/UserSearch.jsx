@@ -3,6 +3,7 @@ import { useContext, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
 import { Alert, Spinner } from 'react-bootstrap'
 import '../assets/css/UserSearch.css'
+import { useNavigate } from 'react-router-dom'
 
 function UserSearch() {
   const { user } = useContext(AuthContext)
@@ -13,6 +14,8 @@ function UserSearch() {
   const [page, setPage] = useState(0)
 
   const [hasMore, setHasMore] = useState(true)
+
+  const navigate = useNavigate()
 
   const handleSearch = async (e) => {
     const value = e.target.value
@@ -116,7 +119,11 @@ function UserSearch() {
       {searchResults.length > 0 && (
         <div className='search-results'>
           {searchResults.map((user) => (
-            <div key={user.id} className='search-result-item'>
+            <div
+              key={user.id}
+              className='search-result-item'
+              onClick={() => navigate(`/home/user/${user.id}`)}
+            >
               <img
                 src={user.avatar || '/img/avatar-profilo.jpg'}
                 alt='Avatar'

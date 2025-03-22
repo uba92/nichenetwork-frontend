@@ -32,6 +32,8 @@ function UserProfile() {
   const [comments, setComments] = useState([])
   const [newComment, setNewComment] = useState('')
 
+  const [isFollowing, setIsFollowing] = useState(false)
+
   const [selectedPost, setSelectedPost] = useState(null)
   const [showModal, setShowModal] = useState(false)
 
@@ -170,6 +172,28 @@ function UserProfile() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPost])
+
+  useEffect(() => {
+    const checkFollowing = async () => {
+      if (user.id !== userId) {
+        try {
+          const response = await axios.get(
+            `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/follows/${user.id}/isFollowing/${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${user.token}`,
+              },
+            }
+          )
+          setIsFollowing(response.data)
+        } catch (error) {
+          console.error('Error checking following:', error)
+        }
+      }
+    }
+    checkFollowing()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUser])
 
   const handleLike = async () => {
     if (!user) {
@@ -323,6 +347,11 @@ function UserProfile() {
               <ListGroup.Item className='text-light'>
                 Post: {posts?.totalElements}
               </ListGroup.Item>
+              <ListGroup.Item className='text-light'>
+                {userId !== user.id && (
+                  <Button>{isFollowing ? 'Segui già' : 'Follow'}</Button>
+                )}
+              </ListGroup.Item>
             </ListGroup>
           </Card>
         </Col>
@@ -361,7 +390,7 @@ function UserProfile() {
               <Modal.Header className='border border-0'>
                 <Modal.Title className='d-flex align-items-center justify-content-between'>
                   <img
-                    src={selectedUser?.avatar}
+                    src={selectedUser?.avatar || '/img/avatar-profilo.jpg'}
                     alt='user-avatar'
                     className='post-details-user-avatar'
                   />
