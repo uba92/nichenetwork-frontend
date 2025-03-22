@@ -1,10 +1,11 @@
 import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
-import { Card, Col, Container, ListGroup, Row } from 'react-bootstrap'
+import { Card, Col, Container, ListGroup, Modal, Row } from 'react-bootstrap'
 import PostCard from '../components/PostCard'
 import { Link, useNavigate } from 'react-router-dom'
 import '../assets/css/ProfilePage.css'
 import { AuthContext } from '../context/AuthContext'
+import FollowList from '../components/FollowList'
 
 function ProfilePage() {
   const { user } = useContext(AuthContext)
@@ -15,6 +16,21 @@ function ProfilePage() {
   const [me, setMe] = useState({})
   const [posts, setPosts] = useState(null)
   const [myCommunities, setMyCommunities] = useState([])
+  const [followersCount, setFollowersCount] = useState(0)
+  const [followingCount, setFollowingCount] = useState(0)
+
+  const [showModal, setShowModal] = useState(false)
+  const [modalType, setModalType] = useState(null)
+
+  const handleShowModal = (type) => {
+    setModalType(type)
+    setShowModal(true)
+  }
+
+  const handleCloseModal = () => {
+    setShowModal(false)
+    setModalType(null)
+  }
 
   if (!user) {
     navigate('/')
@@ -96,10 +112,54 @@ function ProfilePage() {
     }
   }
 
+  const getFollowersCount = async () => {
+    try {
+      const response = await axios.get(
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/follows/${user.id}/followers/count`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
+
+      setFollowersCount(response.data)
+      setIsLoading(false)
+    } catch (error) {
+      setIsError(true)
+      setIsLoading(false)
+      console.error('Error fetching followers count:', error)
+    }
+  }
+
+  const getFollowingCount = async () => {
+    try {
+      const response = await axios.get(
+        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/follows/${user.id}/following/count`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
+
+      setFollowingCount(response.data)
+      setIsLoading(false)
+    } catch (error) {
+      setIsError(true)
+      setIsLoading(false)
+      console.error('Error fetching following count:', error)
+    }
+  }
+
   useEffect(() => {
     getMe()
     getMyPosts()
     getMyCommunities()
+    getFollowersCount()
+    getFollowingCount()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -148,6 +208,24 @@ function ProfilePage() {
               <Card.Text className='profile-bio'>
                 {me.bio || 'Nessuna bio disponibile.'}
               </Card.Text>
+              <ListGroup.Item>
+                <span
+                  style={{
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    marginRight: '15px',
+                  }}
+                  onClick={() => handleShowModal('followers')}
+                >
+                  Follower: {followersCount}
+                </span>
+                <span
+                  style={{ cursor: 'pointer', fontWeight: 'bold' }}
+                  onClick={() => handleShowModal('following')}
+                >
+                  Seguiti: {followingCount}
+                </span>
+              </ListGroup.Item>
             </Card.Body>
             <ListGroup className='list-group-flush profile-info'>
               <ListGroup.Item>Email: {me.email}</ListGroup.Item>
@@ -187,6 +265,25 @@ function ProfilePage() {
           )}
         </Col>
       </Row>
+      {showModal && (
+        <Modal show={showModal} onHide={handleCloseModal} centered size='md'>
+          <Modal.Header closeButton className='bg-dark text-white border-0'>
+            <Modal.Title style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>
+              {modalType === 'followers' ? 'Follower' : 'Seguiti'}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body
+            className='bg-dark text-white'
+            style={{
+              maxHeight: '400px',
+              overflowY: 'auto',
+              padding: '1rem',
+            }}
+          >
+            <FollowList userId={user.id} type={modalType} token={user.token} />
+          </Modal.Body>
+        </Modal>
+      )}
     </Container>
   )
 }
