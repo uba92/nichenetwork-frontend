@@ -6,7 +6,6 @@ function FollowList({ userId, type, token }) {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
-  const [isFollowing, setIsFollowing] = useState({})
 
   useEffect(() => {
     const fetchFollowList = async () => {
