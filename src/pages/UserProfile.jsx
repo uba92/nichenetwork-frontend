@@ -193,7 +193,7 @@ function UserProfile() {
     }
     checkFollowing()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedUser])
+  }, [userId])
 
   const handleLike = async () => {
     if (!user) {
@@ -266,6 +266,45 @@ function UserProfile() {
       getSelectedPostComments()
     } catch (error) {
       console.error('Error adding comment: ', error)
+    }
+  }
+
+  const toggleFollow = async () => {
+    if (!user) {
+      console.error('Nessun utente autenticato')
+      return
+    }
+    if (isFollowing) {
+      try {
+        await axios.delete(
+          `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/follows/${user.id}/unfollow/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        )
+        setIsFollowing(false)
+        console.log(`Ora isFollowing: ${!isFollowing}`)
+      } catch (error) {
+        console.error('Error unfollowing user: ', error)
+      }
+    } else {
+      try {
+        await axios.post(
+          `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/follows/${user.id}/follow/${userId}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        )
+        setIsFollowing(true)
+        console.log(`Ora isFollowing: ${!isFollowing}`)
+      } catch (error) {
+        console.error('Error following user: ', error)
+      }
     }
   }
 
@@ -349,7 +388,9 @@ function UserProfile() {
               </ListGroup.Item>
               <ListGroup.Item className='text-light'>
                 {userId !== user.id && (
-                  <Button>{isFollowing ? 'Segui già' : 'Follow'}</Button>
+                  <Button onClick={toggleFollow}>
+                    {isFollowing ? 'Segui già' : 'Follow'}
+                  </Button>
                 )}
               </ListGroup.Item>
             </ListGroup>

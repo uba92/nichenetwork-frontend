@@ -43,7 +43,7 @@ function FollowList({ userId, type, token }) {
           {users.map((user) => (
             <li key={user.id}>
               <img
-                src={user.avatarUrl || 'https://via.placeholder.com/30'}
+                src={user.avatar || '/img/avatar-profilo.jpg'}
                 alt='avatar'
                 width={30}
                 height={30}
