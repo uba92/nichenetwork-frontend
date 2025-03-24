@@ -16,6 +16,7 @@ import CommunityFeed from '../pages/CommunityFeed'
 import ProfilePage from '../pages/ProfilePage'
 import SettingsPage from '../pages/SettingsPage'
 import UserProfile from '../pages/UserProfile'
+import FollowingFeed from '../pages/FollowingFeed'
 function AppRoutes() {
   return (
     <Routes>
@@ -25,6 +26,7 @@ function AppRoutes() {
 
       <Route element={<ProtectedRoute />}>
         <Route path='/home' element={<CommunityList />} />
+        <Route path='home/following-feed' element={<FollowingFeed />} />
         <Route path='/home/communities' element={<DiscoverCommunities />} />
         <Route
           path='/home/communities/:communityId'

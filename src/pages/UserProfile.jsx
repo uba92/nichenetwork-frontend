@@ -12,7 +12,7 @@ import {
   Modal,
   Row,
 } from 'react-bootstrap'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import '../assets/css/UserProfile.css'
 import { AuthContext } from '../context/AuthContext'
 import { Heart, MessageCircle, MoreVerticalIcon } from 'lucide-react'
@@ -39,6 +39,14 @@ function UserProfile() {
 
   const [expandedComments, setExpandedComments] = useState({})
   const commentMaxChar = 20
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (user && parseInt(userId) === user.id) {
+      navigate(`/home/profile/${user.id}`)
+    }
+  }, [user, userId, navigate])
 
   const getMe = async () => {
     if (!user) {
@@ -428,7 +436,7 @@ function UserProfile() {
         >
           <Row>
             <Col xs={12} lg={7}>
-              <Modal.Header className='border border-0'>
+              <Modal.Header className='border border-0' closeButton>
                 <Modal.Title className='d-flex align-items-center justify-content-between'>
                   <img
                     src={selectedUser?.avatar || '/img/avatar-profilo.jpg'}

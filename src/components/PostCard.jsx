@@ -4,6 +4,7 @@ import '../assets/css/Postcard.css'
 import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
 
 function PostCard({ post }) {
   const [likeCount, setLikeCount] = useState(0)
@@ -21,6 +22,8 @@ function PostCard({ post }) {
 
   const [editingCommentId, setEditingCommentId] = useState(null)
   const [editedCommentContent, setEditedCommentContent] = useState('')
+
+  const navigate = useNavigate()
 
   const fetchLikes = async (userId) => {
     try {
@@ -216,23 +219,42 @@ function PostCard({ post }) {
   return (
     <Card className='my-3 post-card'>
       <Card.Header className='postcard-header'>
-        <div>
-          <Card.Img
-            className='me-3 postcard-avatar'
-            src={post.author.avatar || '/img/avatar-profilo.jpg'}
-            alt='avatar'
-          />
-          <span className='postcard-username'>{post.author.username}</span>
+        <div className='postcard-username-container d-flex flex-row align-items-center w-100 justify-content-between'>
+          <div
+            onClick={() => navigate(`/home/user/${post.author.id}`)}
+            className='postcard-username-avatar-container'
+          >
+            <Card.Img
+              className='me-3 postcard-avatar'
+              src={post.author.avatar || '/img/avatar-profilo.jpg'}
+              alt='avatar'
+            />
+            <span className='postcard-username'>{post.author.username}</span>
+          </div>
+          <div className='d-flex flex-column align-items-end'>
+            {user.id === post.author.id && (
+              <Dropdown
+                onClick={(e) => e.stopPropagation()}
+                className='postcard-dropdown'
+              >
+                <Dropdown.Toggle
+                  variant='link'
+                  className='text-light p-0 border-0'
+                  id='dropdown-post-options'
+                >
+                  <MoreHorizontal size={20} />
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu className='dropdown-menu-dark'>
+                  <Dropdown.Item onClick={() => setIsEditing(true)}>
+                    Modifica
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
+          </div>
         </div>
         <div className='postcard-date'>{formatDate(post.createdAt)}</div>
-        {user.id === post.author.id && (
-          <button
-            className='btn btn-sm btn-outline-light ms-2'
-            onClick={() => setIsEditing(true)}
-          >
-            Modifica
-          </button>
-        )}
       </Card.Header>
       <Card.Body>
         {isEditing ? (

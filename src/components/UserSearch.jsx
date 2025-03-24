@@ -1,21 +1,25 @@
 import axios from 'axios'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
-import { Alert, Spinner } from 'react-bootstrap'
+import { Alert, Button, ListGroup, Spinner } from 'react-bootstrap'
 import '../assets/css/UserSearch.css'
 import { useNavigate } from 'react-router-dom'
+import { Search } from 'lucide-react'
 
 function UserSearch() {
   const { user } = useContext(AuthContext)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  // eslint-disable-next-line no-unused-vars
   const [isError, setIsError] = useState(false)
   const [page, setPage] = useState(0)
 
   const [hasMore, setHasMore] = useState(true)
 
   const navigate = useNavigate()
+
+  const searchInputRef = useRef(null)
 
   const handleSearch = async (e) => {
     const value = e.target.value
@@ -32,6 +36,7 @@ function UserSearch() {
     }
 
     try {
+      setIsError(false)
       const size = 10
       const response = await axios.get(
         `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/search`,
@@ -48,16 +53,24 @@ function UserSearch() {
         }
       )
 
-      const fetched = response.data.content
-
-      if (!Array.isArray(fetched)) {
+      if (response.status === 204) {
         setSearchResults([])
         setIsLoading(false)
         setHasMore(false)
         return
       }
 
-      setSearchResults(fetched)
+      const fetched = response.data.content
+      const filtered = fetched.filter((u) => u.id !== user.id)
+
+      if (filtered.length === 0) {
+        setSearchResults([])
+        setIsLoading(false)
+        setHasMore(false)
+        return
+      }
+
+      setSearchResults(filtered)
       setHasMore(fetched.length === size)
       setIsLoading(false)
     } catch (error) {
@@ -82,67 +95,87 @@ function UserSearch() {
       )
 
       const fetched = response.data.content
+      const filtered = fetched.filter((u) => u.id !== user.id)
 
-      if (!Array.isArray(fetched) || fetched.length === 0) {
+      if (!Array.isArray(filtered) || filtered.length === 0) {
         setHasMore(false)
         return
       }
 
-      setSearchResults((prev) => [...prev, ...fetched])
+      setSearchResults((prev) => [...prev, ...filtered])
       setPage((prev) => prev + 1)
-      setHasMore(fetched.length === size)
+      setHasMore(filtered.length === size)
     } catch (err) {
-      console.error('❌ Errore in loadMore:', err)
+      console.error('Errore in loadMore:', err)
       setHasMore(false)
     }
   }
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target)
+      ) {
+        setSearchResults([])
+      }
+    }
+
+    document.addEventListener('click', handleClickOutside)
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+    }
+  }, [])
+
   return (
-    <div className='search-container'>
-      <h1>Search</h1>
+    <div className='search-container' ref={searchInputRef}>
+      <h1>
+        <Search size={30} />
+      </h1>
       <input
         className='search-input'
-        placeholder='Cerca Utenti...'
+        placeholder='Cerca Nuovi Utenti...'
         type='text'
         value={searchQuery}
         onChange={handleSearch}
       />
-
       {isLoading && <Spinner animation='border' />}
 
-      {isError && (
-        <Alert variant='danger'>
-          Si è verificato un errore durante la ricerca.
-        </Alert>
-      )}
-
-      {searchResults.length > 0 && (
-        <div className='search-results'>
-          {searchResults.map((user) => (
-            <div
-              key={user.id}
-              className='search-result-item'
-              onClick={() => navigate(`/home/user/${user.id}`)}
-            >
-              <img
-                src={user.avatar || '/img/avatar-profilo.jpg'}
-                alt='Avatar'
-                className='search-result-avatar'
-              />
-              {user.username}
-            </div>
-          ))}
+      {searchResults.length > 0 && !isLoading && (
+        <div className='search-results-container'>
+          <ListGroup className='search-results'>
+            {searchResults.map((result) => (
+              <ListGroup.Item
+                key={result.id}
+                className='search-result-item'
+                onClick={() => navigate(`/home/user/${result.id}`)}
+              >
+                <img
+                  src={result.avatar || '/img/avatar-profilo.jpg'}
+                  alt='Avatar'
+                  className='search-result-avatar'
+                />
+                {result.username}
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
         </div>
       )}
 
-      {searchQuery && searchResults.length === 0 && (
+      {searchQuery && searchResults.length === 0 && !isLoading && (
         <p>Nessun utente trovato.</p>
       )}
 
       {searchResults.length > 0 && hasMore && (
-        <button onClick={loadMore} disabled={isLoading}>
+        <Button
+          onClick={loadMore}
+          disabled={isLoading}
+          variant='outline-dark'
+          className='btn mt-3 text-light border-light'
+        >
           {isLoading ? 'Caricamento...' : 'Carica altri'}
-        </button>
+        </Button>
       )}
     </div>
   )

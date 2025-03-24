@@ -31,15 +31,14 @@ function RegisterForm() {
       lastName,
     }
 
-    console.log('Utente registrato con successo ', requestData)
-
     try {
       setIsLoading(true)
       setError('')
       await AuthService.register(requestData)
       setShowSuccessModal(true)
     } catch (err) {
-      setError(err.response?.data?.message || 'Errore di registrazione')
+      console.error('Error registering user:', err)
+      setError(err.response?.data || 'Errore durante la registrazione')
     } finally {
       setIsLoading(false)
     }
@@ -124,7 +123,7 @@ function RegisterForm() {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className='text-black'>
-          Il tuo account è stato creato con successo. Ora puoi accedere.
+          Il tuo account è stato creato con successo.
         </Modal.Body>
         <Modal.Footer>
           <Button

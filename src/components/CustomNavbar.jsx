@@ -55,6 +55,13 @@ function CustomNavbar() {
             </Nav.Link>
             <Nav.Link
               as={Link}
+              to='home/following-feed'
+              className='nav-link-custom'
+            >
+              Following
+            </Nav.Link>
+            <Nav.Link
+              as={Link}
               to='/home/communities'
               className='nav-link-custom'
             >

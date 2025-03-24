@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Spinner } from 'react-bootstrap'
+import { ListGroup, Spinner } from 'react-bootstrap'
+import { useNavigate } from 'react-router-dom'
+import '../assets/css/FollowList.css'
 
 function FollowList({ userId, type, token }) {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchFollowList = async () => {
@@ -39,17 +43,19 @@ function FollowList({ userId, type, token }) {
       <h3>{type === 'followers' ? 'Follower' : 'Seguiti'}</h3>
       {loading && <Spinner animation='border' />}
       {!loading && users.length > 0 && (
-        <ul>
+        <ul className='user-list'>
           {users.map((user) => (
-            <li key={user.id}>
+            <li
+              key={user.id}
+              onClick={() => navigate(`/home/user/${user.id}`)}
+              className='user-item'
+            >
               <img
                 src={user.avatar || '/img/avatar-profilo.jpg'}
                 alt='avatar'
-                width={30}
-                height={30}
-                style={{ borderRadius: '50%', marginRight: '8px' }}
+                className='user-avatar'
               />
-              {user.username}
+              <span className='user-username'>{user.username}</span>
             </li>
           ))}
         </ul>

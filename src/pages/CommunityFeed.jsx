@@ -294,8 +294,6 @@ function CommunityFeed() {
                 </Card.Body>
               </Card>
             )}
-
-            <UserSearch />
           </Col>
         )}
 
