@@ -2,13 +2,16 @@ import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import { Card, Col, Container, ListGroup, Modal, Row } from 'react-bootstrap'
 import PostCard from '../components/PostCard'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import '../assets/css/ProfilePage.css'
 import { AuthContext } from '../context/AuthContext'
 import FollowList from '../components/FollowList'
 
 function ProfilePage() {
   const { user } = useContext(AuthContext)
+
+  const [searchParams] = useSearchParams()
+  const highlightedPostId = searchParams.get('highlight')
 
   const navigate = useNavigate()
   const [isError, setIsError] = useState(false)
@@ -186,6 +189,17 @@ function ProfilePage() {
     }
   }
 
+  useEffect(() => {
+    if (highlightedPostId && posts?.content?.length > 0) {
+      setTimeout(() => {
+        const el = document.getElementById(`post-${highlightedPostId}`)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+      }, 200)
+    }
+  }, [highlightedPostId, posts])
+
   if (isLoading) return <p>Caricamento...</p>
   if (isError || !me) return <p>Errore nel caricamento del profilo</p>
 
@@ -259,7 +273,13 @@ function ProfilePage() {
         <Col md={8}>
           <h3>I tuoi post</h3>
           {posts ? (
-            posts.content.map((post) => <PostCard key={post.id} post={post} />)
+            posts.content.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                highlight={post.id === Number(highlightedPostId)}
+              />
+            ))
           ) : (
             <p>Non hai ancora pubblicato post.</p>
           )}

@@ -6,7 +6,7 @@ import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
-function PostCard({ post }) {
+function PostCard({ post, highlight = false }) {
   const [likeCount, setLikeCount] = useState(0)
   const [likedByUser, setLikedByUser] = useState(false)
   const [userId, setUserId] = useState(null)
@@ -217,7 +217,10 @@ function PostCard({ post }) {
   }
 
   return (
-    <Card className='my-3 post-card'>
+    <Card
+      className={`my-3 post-card ${highlight ? 'highlighted-post' : ''}`}
+      id={`post-${post.id}`}
+    >
       <Card.Header className='postcard-header'>
         <div className='postcard-username-container d-flex flex-row align-items-center w-100 justify-content-between'>
           <div

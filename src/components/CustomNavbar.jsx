@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import '../assets/css/CustomNavbar.css'
 import { useContext, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
+import NotificationDropdown from './NotificationDropdown'
 
 function CustomNavbar() {
   const [showModal, setShowModal] = useState(false)
@@ -47,6 +48,8 @@ function CustomNavbar() {
         <Navbar.Brand as={Link} to='/home' className='navbar-brand-custom'>
           🌐 Niche Network
         </Navbar.Brand>
+
+        <NotificationDropdown />
         <Navbar.Toggle aria-controls='navbar-nav' />
         <Navbar.Collapse id='navbar-nav'>
           <Nav className='ms-auto'>
@@ -74,6 +77,9 @@ function CustomNavbar() {
             >
               Impostazioni
             </Nav.Link>
+
+            <Nav.Item></Nav.Item>
+
             <Nav.Link
               as={Link}
               to={`/home/profile/${user.id}`}

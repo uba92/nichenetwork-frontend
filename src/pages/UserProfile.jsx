@@ -309,7 +309,6 @@ function UserProfile() {
           }
         )
         setIsFollowing(true)
-        console.log(`Ora isFollowing: ${!isFollowing}`)
       } catch (error) {
         console.error('Error following user: ', error)
       }
