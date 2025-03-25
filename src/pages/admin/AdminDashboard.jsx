@@ -11,6 +11,13 @@ function AdminDashboard() {
         </Col>
         <Col lg='9'>
           <h1>Benvenuto nella pagina di gestione per utenti Admin</h1>
+          <p>Usa la sidebar per navigare tra le varie funzionalità</p>
+          <ul>
+            <li>Esplora gli utenti iscritti</li>
+            <li>Crea nuove community</li>
+            <li>Rimuovi community</li>
+            <li>Rimuovi membri dalle community</li>
+          </ul>
           <Outlet />
         </Col>
       </Row>

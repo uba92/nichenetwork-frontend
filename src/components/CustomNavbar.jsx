@@ -1,11 +1,14 @@
 import { Navbar, Nav, Container, Modal, Button, Spinner } from 'react-bootstrap'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import '../assets/css/CustomNavbar.css'
 import { useContext, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
 import NotificationDropdown from './NotificationDropdown'
 
 function CustomNavbar() {
+  const location = useLocation()
+  const adminRoute = location.pathname.startsWith('/admin')
+
   const [showModal, setShowModal] = useState(false)
 
   const { user, logout, loading } = useContext(AuthContext)
@@ -45,47 +48,56 @@ function CustomNavbar() {
   return (
     <Navbar expand='lg' className='navbar-custom' variant='dark'>
       <Container>
-        <Navbar.Brand as={Link} to='/home' className='navbar-brand-custom'>
-          🌐 Niche Network
-        </Navbar.Brand>
+        {adminRoute ? (
+          <Navbar.Brand as={Link} to='/admin' className='navbar-brand-custom'>
+            🌐 Niche Network
+          </Navbar.Brand>
+        ) : (
+          <Navbar.Brand as={Link} to='/home' className='navbar-brand-custom'>
+            🌐 Niche Network
+          </Navbar.Brand>
+        )}
 
-        <NotificationDropdown />
+        {!adminRoute && <NotificationDropdown />}
         <Navbar.Toggle aria-controls='navbar-nav' />
         <Navbar.Collapse id='navbar-nav'>
           <Nav className='ms-auto'>
-            <Nav.Link as={Link} to='/home' className='nav-link-custom'>
-              Home
-            </Nav.Link>
-            <Nav.Link
-              as={Link}
-              to='home/following-feed'
-              className='nav-link-custom'
-            >
-              Following
-            </Nav.Link>
-            <Nav.Link
-              as={Link}
-              to='/home/communities'
-              className='nav-link-custom'
-            >
-              Esplora Community
-            </Nav.Link>
+            {!adminRoute && (
+              <>
+                <Nav.Link as={Link} to='/home' className='nav-link-custom'>
+                  Home
+                </Nav.Link>
+                <Nav.Link
+                  as={Link}
+                  to='home/following-feed'
+                  className='nav-link-custom'
+                >
+                  Following
+                </Nav.Link>
+                <Nav.Link
+                  as={Link}
+                  to='/home/communities'
+                  className='nav-link-custom'
+                >
+                  Esplora Community
+                </Nav.Link>
+
+                <Nav.Link
+                  as={Link}
+                  to={`/home/profile/${user.id}`}
+                  className='nav-link-custom'
+                >
+                  Profilo
+                </Nav.Link>
+              </>
+            )}
+
             <Nav.Link
               as={Link}
               to={`/home/profile/settings/${user.id}`}
               className='nav-link-custom'
             >
               Impostazioni
-            </Nav.Link>
-
-            <Nav.Item></Nav.Item>
-
-            <Nav.Link
-              as={Link}
-              to={`/home/profile/${user.id}`}
-              className='nav-link-custom'
-            >
-              Profilo
             </Nav.Link>
 
             <Nav.Link

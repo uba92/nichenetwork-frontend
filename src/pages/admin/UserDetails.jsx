@@ -41,7 +41,6 @@ function UserDetails() {
         },
       })
 
-      console.log('Utente recuperato: ', response.data)
       setUser(response.data)
       setIsLoading(false)
     } catch (error) {

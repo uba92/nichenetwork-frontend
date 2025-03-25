@@ -101,8 +101,6 @@ function ManageUsers() {
 
       usersWithRoles = await Promise.all(userPromises)
 
-      console.log('Lista utenti con ruolo: ', usersWithRoles)
-
       setUsers(usersWithRoles)
       setTotPages(response.data.totalPages)
     } catch (error) {

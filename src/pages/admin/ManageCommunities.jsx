@@ -43,8 +43,6 @@ function ManageCommunities() {
 
       setCommunities(response.data)
       setIsLoading(false)
-
-      console.log('Communities recuperate: ', response.data)
     } catch (error) {
       setIsError(true)
       console.error('Error fetching communities:', error)

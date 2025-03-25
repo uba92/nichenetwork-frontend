@@ -1,16 +1,19 @@
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import {
   Alert,
   Button,
   Card,
   Col,
   Container,
+  Form,
   ListGroup,
+  Modal,
   Row,
   Spinner,
 } from 'react-bootstrap'
 import { useNavigate, useParams } from 'react-router-dom'
+import { AuthContext } from '../../context/AuthContext'
 
 const API_URL =
   'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/communities'
@@ -25,8 +28,14 @@ function CommunityDetails() {
   const [communityMember, setCommunityMember] = useState([])
   const navigate = useNavigate()
 
-  const rawUser = localStorage.getItem('user')
-  const authenticatedUser = rawUser ? JSON.parse(rawUser) : null
+  const [showModal, setShowModal] = useState(false)
+  const handleCloseModal = () => setShowModal(false)
+  const handleShowModal = () => setShowModal(true)
+
+  const [editName, setEditName] = useState('')
+  const [editDescription, setEditDescription] = useState('')
+
+  const { user } = useContext(AuthContext)
 
   const formatDate = (dateString) => {
     const parsedDate = new Date(Date.parse(dateString))
@@ -41,7 +50,7 @@ function CommunityDetails() {
   }
 
   const removeMember = async (userId) => {
-    if (!authenticatedUser) {
+    if (!user) {
       console.error('Nessun utente autenticato')
       return
     }
@@ -50,7 +59,7 @@ function CommunityDetails() {
       await axios.delete(`${API_URL_MEMBERS}/leave/${userId}/${id}`, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
       })
 
@@ -63,7 +72,7 @@ function CommunityDetails() {
   }
 
   const getCommunityMembers = async (id) => {
-    if (!authenticatedUser) {
+    if (!user) {
       console.error('Nessun utente autenticato')
       return
     }
@@ -72,12 +81,11 @@ function CommunityDetails() {
       const response = await axios.get(`${API_URL_MEMBERS}/${id}/members`, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
       })
 
       setCommunityMember(response.data)
-      console.log('Membri della community: ', response.data)
       setIsLoading(false)
     } catch (error) {
       setIsError(true)
@@ -86,7 +94,7 @@ function CommunityDetails() {
   }
 
   const getCommunityById = async (id) => {
-    if (!authenticatedUser) {
+    if (!user) {
       console.error('Nessun utente autenticato')
       return
     }
@@ -95,13 +103,12 @@ function CommunityDetails() {
       const response = await axios.get(`${API_URL}/${id}`, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
       })
 
       setCommunity(response.data)
       setIsLoading(false)
-      console.log('Community recuperata da id: ', response.data)
     } catch (error) {
       setIsError(true)
       console.error('Error fetching community:', error)
@@ -109,7 +116,7 @@ function CommunityDetails() {
   }
 
   const handleDeleteCommunity = async () => {
-    if (!authenticatedUser) {
+    if (!user) {
       console.error('Nessun utente autenticato')
       return
     }
@@ -118,7 +125,7 @@ function CommunityDetails() {
       const response = await axios.delete(`${API_URL}/${id}`, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
       })
 
@@ -130,11 +137,50 @@ function CommunityDetails() {
     }
   }
 
+  const handleEditCommunity = async () => {
+    if (!user) {
+      console.error('Nessun utente autenticato')
+      return
+    }
+
+    if (id) {
+      try {
+        await axios.put(
+          `${API_URL}/${id}`,
+          {
+            name: editName,
+            description: editDescription,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        )
+
+        alert('Community modificata con successo')
+        navigate(`/admin/gestione-community`)
+      } catch (error) {
+        console.error('Errore nella rimozione della community:', error)
+        alert('Errore durante la rimozione della community')
+      }
+    }
+  }
+
   useEffect(() => {
-    getCommunityById(id)
-    getCommunityMembers(id)
+    if (id) {
+      getCommunityById(id)
+      getCommunityMembers(id)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
+
+  useEffect(() => {
+    if (community) {
+      setEditName(community.name || '')
+      setEditDescription(community.description || '')
+    }
+  }, [community])
 
   if (isLoading) {
     return (
@@ -160,20 +206,27 @@ function CommunityDetails() {
             <Card.Body>
               <Card.Title>Dettagli Community</Card.Title>
               <p>
-                <strong>ID:</strong> {community.id}
+                <strong>ID:</strong> {community?.id}
               </p>
               <p>
-                <strong>Nome:</strong> {community.name}
+                <strong>Nome:</strong> {community?.name}
               </p>
               <p>
-                <strong>Descrizione:</strong> {community.description}
+                <strong>Descrizione:</strong> {community?.description}
               </p>
               <p>
                 <strong>Data creazione:</strong>{' '}
-                {formatDate(community.createdAt)}
+                {formatDate(community?.createdAt)}
               </p>
               <Button variant='danger' onClick={handleDeleteCommunity}>
                 Rimuovi Community
+              </Button>
+              <Button
+                className=' ms-3'
+                variant='primary'
+                onClick={handleShowModal}
+              >
+                Modifica Community
               </Button>
             </Card.Body>
           </Card>
@@ -181,7 +234,7 @@ function CommunityDetails() {
       </Row>
       <Row className=' mt-3'>
         <Col>
-          <h2>Membri della Community - {community.name}</h2>
+          <h2>Membri della Community - {community?.name}</h2>
           <ListGroup>
             {communityMember.length > 0 ? (
               communityMember.map((member, index) => (
@@ -219,6 +272,46 @@ function CommunityDetails() {
           </ListGroup>
         </Col>
       </Row>
+
+      <Modal
+        show={showModal}
+        onHide={handleCloseModal}
+        style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+        centered
+      >
+        <Modal.Header className='bg-dark' closeButton>
+          <Modal.Title>Modifica Community</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className='bg-dark text-light'>
+          <Form>
+            <Form.Group className='mb-3'>
+              <Form.Label>Nome Community:</Form.Label>
+              <Form.Control
+                type='text'
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className='mb-3'>
+              <Form.Label>Descrizione Community:</Form.Label>
+              <Form.Control
+                as='textarea'
+                rows={3}
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer className='bg-dark'>
+          <Button variant='secondary' onClick={handleCloseModal}>
+            Annulla
+          </Button>
+          <Button variant='success' onClick={handleEditCommunity}>
+            Salva Modifiche
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   )
 }
