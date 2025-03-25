@@ -123,7 +123,9 @@ function RegisterForm() {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className='text-black'>
-          Il tuo account è stato creato con successo.
+          Abbiamo inviato una mail di "Avvenuta registrazione" all'indirizzo
+          mail da te indicato! <br />
+          Se non riesci a vederla controlla nella cartella Spam
         </Modal.Body>
         <Modal.Footer>
           <Button
