@@ -1,10 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import axiosInstance from '../../services/axios'
 import { Container, Card, Spinner, Alert, Button } from 'react-bootstrap'
-
-const API_URL =
-  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users'
 
 function UserDetails() {
   const { id } = useParams()
@@ -34,7 +31,7 @@ function UserDetails() {
     }
 
     try {
-      const response = await axios.get(`${API_URL}/${id}`, {
+      const response = await axiosInstance.get(`/api/users/${id}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${authenticatedUser.token}`,
@@ -55,8 +52,8 @@ function UserDetails() {
 
   const handleDeleteUser = async () => {
     try {
-      const response = await axios.delete(
-        `${API_URL}/deleteUser?targetUsername=${user.username}`,
+      const response = await axiosInstance.delete(
+        `/api/users/deleteUser?targetUsername=${user.username}`,
         {
           headers: {
             'Content-Type': 'application/json',

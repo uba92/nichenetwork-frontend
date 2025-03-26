@@ -11,11 +11,8 @@ import {
   Row,
   Spinner,
 } from 'react-bootstrap'
-import axios from 'axios'
+import axiosInstance from '../services/axios'
 import { useNavigate } from 'react-router-dom'
-
-const API_URL =
-  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me/communities'
 
 function CommunityList() {
   const { user } = useContext(AuthContext)
@@ -31,7 +28,7 @@ function CommunityList() {
       return
     }
     try {
-      const response = await axios.get(API_URL, {
+      const response = await axiosInstance.get(`/api/users/me/communities`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user.token}`,

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axiosInstance from '../services/axios'
 import { AuthContext } from '../context/AuthContext'
 import { useContext, useEffect, useState } from 'react'
 
@@ -17,16 +17,12 @@ export function useNotifications() {
 
   const getNotifications = async () => {
     try {
-      const response = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/notifications`,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
+      const response = await axiosInstance.get(`/api/notifications`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
       setNotifications(response.data)
-      console.log('Notifications:', response.data)
     } catch (error) {
       console.error('Error fetching notifications:', error)
     } finally {
@@ -36,15 +32,11 @@ export function useNotifications() {
 
   const markAllAsRead = async () => {
     try {
-      await axios.put(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/notifications/markAllAsRead`,
-        null,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
+      await axiosInstance.put(`/api/notifications/markAllAsRead`, null, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
       setNotifications([])
     } catch (error) {
       console.error('Error marking notifications as read:', error)

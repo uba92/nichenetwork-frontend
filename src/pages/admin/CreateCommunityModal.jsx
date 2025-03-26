@@ -1,9 +1,6 @@
-import axios from 'axios'
 import { useState } from 'react'
 import { Alert, Button, Form, Modal, Spinner } from 'react-bootstrap'
-
-const API_URL =
-  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/communities'
+import axiosInstance from '../../services/axios'
 
 function CreateCommunityModal({ show, handleClose, getCommunities }) {
   const [name, setName] = useState('')
@@ -38,7 +35,7 @@ function CreateCommunityModal({ show, handleClose, getCommunities }) {
       }
       formData.append('color', color)
 
-      await axios.post(`${API_URL}`, formData, {
+      await axiosInstance.post(`/api/communities`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${authenticatedUser.token}`,

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axiosInstance from '../services/axios'
 import { useContext, useEffect, useRef, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
 import { Alert, Button, ListGroup, Spinner } from 'react-bootstrap'
@@ -38,20 +38,17 @@ function UserSearch() {
     try {
       setIsError(false)
       const size = 10
-      const response = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/search`,
-        {
-          params: {
-            query: value,
-            page: 0,
-            size,
-          },
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
+      const response = await axiosInstance.get(`/api/users/search`, {
+        params: {
+          query: value,
+          page: 0,
+          size,
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
 
       if (response.status === 204) {
         setSearchResults([])
@@ -83,16 +80,13 @@ function UserSearch() {
   const loadMore = async () => {
     try {
       const size = 10
-      const response = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/search`,
-        {
-          params: { query: searchQuery, page: page + 1, size },
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
+      const response = await axiosInstance.get(`/api/users/search`, {
+        params: { query: searchQuery, page: page + 1, size },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
 
       const fetched = response.data.content
       const filtered = fetched.filter((u) => u.id !== user.id)

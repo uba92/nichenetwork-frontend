@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axiosInstance from '../../services/axios'
 import {
   Alert,
   Button,
@@ -13,10 +13,6 @@ import { useEffect, useState } from 'react'
 import CreateAdminModal from './CreateAdminModal'
 import { useNavigate } from 'react-router-dom'
 
-const API_URL =
-  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/admin/users'
-const API_URL_ROLE =
-  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/admin/users'
 function ManageUsers() {
   const [users, setUsers] = useState(null)
   const [isError, setIsError] = useState(false)
@@ -34,8 +30,8 @@ function ManageUsers() {
     setSearchQuery(query)
 
     try {
-      const response = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/search?query=${searchQuery}`,
+      const response = await axiosInstance.get(
+        `/api/users/search?query=${searchQuery}`,
         {
           headers: {
             'Content-Type': 'applicatioin/json',
@@ -69,8 +65,8 @@ function ManageUsers() {
     }
 
     try {
-      const response = await axios.get(
-        `${API_URL}?currentPage=${currentPage}`,
+      const response = await axiosInstance.get(
+        `/api/admin/users?currentPage=${currentPage}`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -83,8 +79,8 @@ function ManageUsers() {
 
       const userPromises = usersWithRoles.map(async (user) => {
         try {
-          const roleResponse = await axios.get(
-            `${API_URL_ROLE}/${user.id}/role`,
+          const roleResponse = await axiosInstance.get(
+            `/api/admin/users/${user.id}/role`,
             {
               headers: {
                 'Content-Type': 'application/json',
@@ -112,6 +108,7 @@ function ManageUsers() {
 
   useEffect(() => {
     fetchUsers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage])
 
   return (

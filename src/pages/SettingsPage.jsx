@@ -1,7 +1,7 @@
 import { Button, Card, Container, Form } from 'react-bootstrap'
 import '../assets/css/SettingsPage.css'
 import { useContext, useEffect, useState } from 'react'
-import axios from 'axios'
+import axiosInstance from '../services/axios'
 import { AuthContext } from '../context/AuthContext'
 import { jwtDecode } from 'jwt-decode'
 
@@ -47,8 +47,8 @@ function SettingsPage() {
       const formData = new FormData()
       formData.append('file', avatar)
 
-      const response = await axios.put(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/changeAvatar`,
+      const response = await axiosInstance.put(
+        `/api/users/changeAvatar`,
         formData,
         {
           headers: {
@@ -73,8 +73,8 @@ function SettingsPage() {
       return
     }
     try {
-      await axios.put(
-        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/updateProfile',
+      await axiosInstance.put(
+        '/api/users/updateProfile',
         { bio },
         {
           headers: {
@@ -102,8 +102,8 @@ function SettingsPage() {
     }
 
     try {
-      await axios.put(
-        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/changePassword',
+      await axiosInstance.put(
+        '/api/users/changePassword',
         { oldPassword, newPassword },
         {
           headers: {
@@ -147,16 +147,13 @@ function SettingsPage() {
         username: username,
         password: password,
       }
-      const response = await axios.delete(
-        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/deleteUser',
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${user.token}`,
-          },
-          data: requestData,
-        }
-      )
+      const response = await axiosInstance.delete('/api/users/deleteUser', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+        data: requestData,
+      })
 
       alert(response.data)
       localStorage.removeItem('user')

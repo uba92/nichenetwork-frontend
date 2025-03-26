@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from 'react'
-import axios from 'axios'
 import AuthService from '../services/AuthService'
 import { jwtDecode } from 'jwt-decode'
+import axiosInstance from '../services/axios'
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext()
@@ -17,15 +17,12 @@ export const AuthProvider = ({ children }) => {
         try {
           const parsedUser = JSON.parse(storedUser)
           const decodedToken = jwtDecode(parsedUser.token)
-          const response = await axios.get(
-            'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me',
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${parsedUser.token}`,
-              },
-            }
-          )
+          const response = await axiosInstance.get('/api/users/me', {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${parsedUser.token}`,
+            },
+          })
           const userData = response.data
 
           const enrichedUser = {

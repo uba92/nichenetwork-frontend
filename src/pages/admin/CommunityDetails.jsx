@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import {
   Alert,
@@ -14,11 +13,7 @@ import {
 } from 'react-bootstrap'
 import { useNavigate, useParams } from 'react-router-dom'
 import { AuthContext } from '../../context/AuthContext'
-
-const API_URL =
-  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/communities'
-const API_URL_MEMBERS =
-  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/community-members'
+import axiosInstance from '../../services/axios'
 
 function CommunityDetails() {
   const { id } = useParams()
@@ -56,12 +51,15 @@ function CommunityDetails() {
     }
 
     try {
-      await axios.delete(`${API_URL_MEMBERS}/leave/${userId}/${id}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token}`,
-        },
-      })
+      await axiosInstance.delete(
+        `/api/community-members/remove/${user.id}/${userId}/${id}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
 
       alert('Utente rimosso con successo dalla community')
       getCommunityMembers(id)
@@ -78,12 +76,15 @@ function CommunityDetails() {
     }
 
     try {
-      const response = await axios.get(`${API_URL_MEMBERS}/${id}/members`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token}`,
-        },
-      })
+      const response = await axiosInstance.get(
+        `/api/community-members/${id}/members`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
 
       setCommunityMember(response.data)
       setIsLoading(false)
@@ -100,7 +101,7 @@ function CommunityDetails() {
     }
 
     try {
-      const response = await axios.get(`${API_URL}/${id}`, {
+      const response = await axiosInstance.get(`/api/communities/${id}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user.token}`,
@@ -122,7 +123,7 @@ function CommunityDetails() {
     }
 
     try {
-      const response = await axios.delete(`${API_URL}/${id}`, {
+      const response = await axiosInstance.delete(`/api/communities/${id}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user.token}`,
@@ -145,8 +146,8 @@ function CommunityDetails() {
 
     if (id) {
       try {
-        await axios.put(
-          `${API_URL}/${id}`,
+        await axiosInstance.put(
+          `/api/communities/${id}`,
           {
             name: editName,
             description: editDescription,

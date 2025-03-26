@@ -1,7 +1,7 @@
 import { Card, Dropdown } from 'react-bootstrap'
 import { Heart, MessageCircle, MoreHorizontal } from 'lucide-react'
 import '../assets/css/Postcard.css'
-import axios from 'axios'
+import axiosInstance from '../services/axios'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
@@ -27,8 +27,8 @@ function PostCard({ post, highlight = false }) {
 
   const fetchLikes = async (userId) => {
     try {
-      const response = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/likes/post/${post.id}/count`,
+      const response = await axiosInstance.get(
+        `/api/likes/post/${post.id}/count`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -37,8 +37,8 @@ function PostCard({ post, highlight = false }) {
       )
       setLikeCount(response.data)
 
-      const userLikeResponse = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/likes/post/${post.id}/user/${userId}`,
+      const userLikeResponse = await axiosInstance.get(
+        `/api/likes/post/${post.id}/user/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -54,8 +54,8 @@ function PostCard({ post, highlight = false }) {
 
   const fetchComments = async () => {
     try {
-      const response = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/comments/post/${post.id}`,
+      const response = await axiosInstance.get(
+        `/api/comments/post/${post.id}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -88,8 +88,8 @@ function PostCard({ post, highlight = false }) {
     }
 
     try {
-      await axios.post(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/likes/post/${post.id}/user/${userId}`,
+      await axiosInstance.post(
+        `/api/likes/post/${post.id}/user/${userId}`,
         {},
         {
           headers: {
@@ -111,8 +111,8 @@ function PostCard({ post, highlight = false }) {
     if (!newComment.trim()) return
 
     try {
-      await axios.post(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/comments/post/${post.id}/user/${userId}`,
+      await axiosInstance.post(
+        `/api/comments/post/${post.id}/user/${userId}`,
         null,
 
         {
@@ -130,14 +130,11 @@ function PostCard({ post, highlight = false }) {
 
   const handleDeleteComment = async (commentId) => {
     try {
-      await axios.delete(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/comments/${commentId}/user/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
+      await axiosInstance.delete(`/api/comments/${commentId}/user/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
       fetchComments()
     } catch (error) {
       console.error('Error deleting comment:', error)
@@ -156,8 +153,8 @@ function PostCard({ post, highlight = false }) {
 
   const handleUpdatePost = async () => {
     try {
-      await axios.put(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/posts/${post.id}`,
+      await axiosInstance.put(
+        `/api/posts/${post.id}`,
         {
           content: editedContent,
         },
@@ -177,8 +174,8 @@ function PostCard({ post, highlight = false }) {
 
   const handleUpdateComment = async (commentId) => {
     try {
-      await axios.put(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/comments/${commentId}/user/${userId}`,
+      await axiosInstance.put(
+        `/api/comments/${commentId}/user/${userId}`,
         null,
         {
           headers: { Authorization: `Bearer ${user.token}` },

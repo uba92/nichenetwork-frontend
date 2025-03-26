@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axiosInstance from '../services/axios'
 import { useContext, useEffect, useState } from 'react'
 import { Card, Col, Container, ListGroup, Modal, Row } from 'react-bootstrap'
 import PostCard from '../components/PostCard'
@@ -46,15 +46,12 @@ function ProfilePage() {
     }
 
     try {
-      const response = await axios.get(
-        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me',
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
+      const response = await axiosInstance.get('/api/users/me', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
 
       setMe(response.data)
       setIsLoading(false)
@@ -72,15 +69,12 @@ function ProfilePage() {
     }
 
     try {
-      const response = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me/communities`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
+      const response = await axiosInstance.get(`/api/users/me/communities`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
 
       setMyCommunities(response.data)
       setIsLoading(false)
@@ -97,15 +91,12 @@ function ProfilePage() {
       return
     }
     try {
-      const response = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/posts/user/${user.id}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
+      const response = await axiosInstance.get(`/api/posts/user/${user.id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
       setPosts(response.data)
       setIsLoading(false)
     } catch (error) {
@@ -117,8 +108,8 @@ function ProfilePage() {
 
   const getFollowersCount = async () => {
     try {
-      const response = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/follows/${user.id}/followers/count`,
+      const response = await axiosInstance.get(
+        `/api/follows/${user.id}/followers/count`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -138,8 +129,8 @@ function ProfilePage() {
 
   const getFollowingCount = async () => {
     try {
-      const response = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/follows/${user.id}/following/count`,
+      const response = await axiosInstance.get(
+        `/api/follows/${user.id}/following/count`,
         {
           headers: {
             'Content-Type': 'application/json',

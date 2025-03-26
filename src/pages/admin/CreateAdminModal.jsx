@@ -1,9 +1,6 @@
-import axios from 'axios'
 import { useState } from 'react'
 import { Button, Form, Modal } from 'react-bootstrap'
-
-const API_CREATE_ADMIN =
-  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/admin'
+import axiosInstance from '../../services/axios'
 
 function CreateAdminModal({ show, handleClose, fetchUsers }) {
   const [username, setUsername] = useState('')
@@ -26,8 +23,8 @@ function CreateAdminModal({ show, handleClose, fetchUsers }) {
     }
 
     try {
-      await axios.post(
-        API_CREATE_ADMIN,
+      await axiosInstance.post(
+        `/api/admin`,
         { username, password, email, firstName, lastName },
         {
           headers: {

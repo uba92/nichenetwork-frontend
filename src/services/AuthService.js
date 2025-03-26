@@ -1,25 +1,22 @@
-import axios from 'axios'
+import axiosInstance from './axios'
 import { jwtDecode } from 'jwt-decode'
 
 const API_URL =
   'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/auth/'
 
 const login = async (credentials) => {
-  const response = await axios.post(`${API_URL}login`, credentials)
+  const response = await axiosInstance.post(`/api/auth/login`, credentials)
 
   if (response.data.token) {
     const token = response.data.token
     const decodedToken = jwtDecode(token)
 
-    const userResponse = await axios.get(
-      `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
+    const userResponse = await axiosInstance.get(`/api/users/me`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
     const userData = userResponse.data
 
     const completeUser = {
@@ -48,7 +45,7 @@ const getUserRole = () => {
 }
 
 const register = async (userData) => {
-  const response = await axios.post(`${API_URL}register`, userData)
+  const response = await axiosInstance.post(`/api/auth/register`, userData)
   return response.data
 }
 

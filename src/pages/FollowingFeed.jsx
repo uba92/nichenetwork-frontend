@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react'
 import { useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
-import axios from 'axios'
+import axiosInstance from '../services/axios'
 import { Alert, Card, Col, Container, Row, Spinner } from 'react-bootstrap'
 import PostCard from '../components/PostCard'
 import UserSearch from '../components/UserSearch'
@@ -16,15 +16,12 @@ function FollowingFeed() {
   const getFollowingPosts = async () => {
     if (user) {
       try {
-        const response = await axios.get(
-          `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/posts/following`,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${user.token}`,
-            },
-          }
-        )
+        const response = await axiosInstance.get(`/api/posts/following`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        })
         setFollowingPosts(response.data)
         setIsLoading(false)
       } catch (error) {

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axiosInstance from '../../services/axios'
 import { useEffect } from 'react'
 import { useState } from 'react'
 import {
@@ -13,8 +13,6 @@ import {
 import { useNavigate } from 'react-router-dom'
 import CreateCommunityModal from './CreateCommunityModal'
 
-const API_URL =
-  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/communities'
 function ManageCommunities() {
   const [communities, setCommunities] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -34,7 +32,7 @@ function ManageCommunities() {
     }
 
     try {
-      const response = await axios.get(`${API_URL}`, {
+      const response = await axiosInstance.get(`/api/communities`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${authenticatedUser.token}`,
@@ -70,12 +68,15 @@ function ManageCommunities() {
     }
 
     try {
-      const response = await axios.get(`${API_URL}/search?query=${query}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authenticatedUser.token}`,
-        },
-      })
+      const response = await axiosInstance.get(
+        `/api/communities/search?query=${query}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authenticatedUser.token}`,
+          },
+        }
+      )
 
       setCommunities(response.data)
     } catch (error) {

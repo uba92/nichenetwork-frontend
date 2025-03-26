@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axiosInstance from '../services/axios'
 import { useContext, useEffect, useState } from 'react'
 import {
   Button,
@@ -55,15 +55,12 @@ function UserProfile() {
     }
 
     try {
-      const response = await axios.get(
-        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me',
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
+      const response = await axiosInstance.get('/api/users/me', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
 
       setMe(response.data)
       setIsLoading(false)
@@ -80,8 +77,8 @@ function UserProfile() {
       return
     }
     try {
-      const response = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/likes/post/${selectedPost.id}/count`,
+      const response = await axiosInstance.get(
+        `/api/likes/post/${selectedPost.id}/count`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -90,8 +87,8 @@ function UserProfile() {
       )
       setLikeCount(response.data)
 
-      const userLikeResponse = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/likes/post/${selectedPost.id}/user/${user.id}`,
+      const userLikeResponse = await axiosInstance.get(
+        `/api/likes/post/${selectedPost.id}/user/${user.id}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -112,15 +109,12 @@ function UserProfile() {
     }
 
     try {
-      const response = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/${userId}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
+      const response = await axiosInstance.get(`/api/users/${userId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
       setSelectedUser(response.data)
       setIsLoading(false)
     } catch (error) {
@@ -137,15 +131,12 @@ function UserProfile() {
     }
 
     try {
-      const response = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/posts/user/${userId}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
+      const response = await axiosInstance.get(`/api/posts/user/${userId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
 
       setPosts(response.data)
       setIsLoading(false)
@@ -185,8 +176,8 @@ function UserProfile() {
     const checkFollowing = async () => {
       if (user.id !== userId) {
         try {
-          const response = await axios.get(
-            `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/follows/${user.id}/isFollowing/${userId}`,
+          const response = await axiosInstance.get(
+            `/api/follows/${user.id}/isFollowing/${userId}`,
             {
               headers: {
                 Authorization: `Bearer ${user.token}`,
@@ -210,8 +201,8 @@ function UserProfile() {
     }
 
     try {
-      await axios.post(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/likes/post/${selectedPost.id}/user/${user.id}`,
+      await axiosInstance.post(
+        `/api/likes/post/${selectedPost.id}/user/${user.id}`,
         {},
         {
           headers: {
@@ -236,8 +227,8 @@ function UserProfile() {
     }
 
     try {
-      const response = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/comments/post/${selectedPost?.id}`,
+      const response = await axiosInstance.get(
+        `/api/comments/post/${selectedPost?.id}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -261,8 +252,8 @@ function UserProfile() {
     if (!newComment.trim()) return
 
     try {
-      await axios.post(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/comments/post/${selectedPost?.id}/user/${user?.id}`,
+      await axiosInstance.post(
+        `/api/comments/post/${selectedPost?.id}/user/${user?.id}`,
         null,
         {
           headers: { Authorization: `Bearer ${user.token}` },
@@ -284,8 +275,8 @@ function UserProfile() {
     }
     if (isFollowing) {
       try {
-        await axios.delete(
-          `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/follows/${user.id}/unfollow/${userId}`,
+        await axiosInstance.delete(
+          `/api/follows/${user.id}/unfollow/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${user.token}`,
@@ -299,8 +290,8 @@ function UserProfile() {
       }
     } else {
       try {
-        await axios.post(
-          `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/follows/${user.id}/follow/${userId}`,
+        await axiosInstance.post(
+          `/api/follows/${user.id}/follow/${userId}`,
           {},
           {
             headers: {
@@ -340,8 +331,8 @@ function UserProfile() {
 
   const handleDeleteComment = async (commentId) => {
     try {
-      await axios.delete(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/comments/${commentId}/user/${user?.id}`,
+      await axiosInstance.delete(
+        `/api/comments/${commentId}/user/${user?.id}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axiosInstance from '../services/axios'
 import { useContext, useEffect, useRef, useState } from 'react'
 import {
   Button,
@@ -19,13 +19,6 @@ import PostCard from '../components/PostCard'
 import { ArrowBigLeft } from 'lucide-react'
 import { AuthContext } from '../context/AuthContext'
 import UserSearch from '../components/UserSearch'
-
-const API_GET_POSTS =
-  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/posts/community'
-const API_GET_COMMUNITY =
-  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/communities'
-const API_LEAVE_COMMUNITY =
-  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/community-members/leave'
 
 function CommunityFeed() {
   const { communityId } = useParams()
@@ -53,12 +46,15 @@ function CommunityFeed() {
 
   const getCommunity = async () => {
     try {
-      const response = await axios.get(`${API_GET_COMMUNITY}/${communityId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token}`,
-        },
-      })
+      const response = await axiosInstance.get(
+        `/api/communities/${communityId}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
       setCommunity(response.data)
       setIsLoading(false)
     } catch (error) {
@@ -70,8 +66,8 @@ function CommunityFeed() {
 
   const getMembers = async () => {
     try {
-      const response = await axios.get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/community-members/${communityId}/members`,
+      const response = await axiosInstance.get(
+        `/api/community-members/${communityId}/members`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -92,15 +88,12 @@ function CommunityFeed() {
 
   const getMe = async () => {
     try {
-      const response = await axios.get(
-        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me',
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
+      const response = await axiosInstance.get('/api/users/me', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
       setMe(response.data)
       setIsLoading(false)
     } catch (error) {
@@ -112,12 +105,15 @@ function CommunityFeed() {
 
   const fetchPosts = async () => {
     try {
-      const response = await axios.get(`${API_GET_POSTS}/${communityId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token}`,
-        },
-      })
+      const response = await axiosInstance.get(
+        `/api/posts/community/${communityId}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
       setPosts(response.data)
       setIsLoading(false)
     } catch (error) {
@@ -152,16 +148,12 @@ function CommunityFeed() {
 
       formData.append('communityId', communityId)
 
-      await axios.post(
-        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/posts',
-        formData,
-        {
-          headers: {
-            //   'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
+      await axiosInstance.post('/api/posts', formData, {
+        headers: {
+          //   'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
       setContent('')
       setImageUrl('')
 
@@ -188,12 +180,15 @@ function CommunityFeed() {
       return
     }
     try {
-      await axios.delete(`${API_LEAVE_COMMUNITY}/${user.id}/${communityId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token}`,
-        },
-      })
+      await axiosInstance.delete(
+        `/api/community-members/leave/${user.id}/${communityId}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
       setTimeout(() => {
         navigate('/home')
       }, 1000)
@@ -228,13 +223,10 @@ function CommunityFeed() {
   }, [communityMembers, me?.id])
 
   useEffect(() => {
-    axios
-      .get(
-        `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/communities/${communityId}`,
-        {
-          headers: { Authorization: `Bearer ${user.token}` },
-        }
-      )
+    axiosInstance
+      .get(`/api/communities/${communityId}`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      })
       .then((response) => {
         setCommunity(response.data)
       })

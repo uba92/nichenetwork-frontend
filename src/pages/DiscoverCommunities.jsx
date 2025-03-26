@@ -10,15 +10,10 @@ import {
 } from 'react-bootstrap'
 import '../assets/css/DiscoverCommunities.css'
 import { useEffect, useState, useCallback, useContext } from 'react'
-import axios from 'axios'
+import axiosInstance from '../services/axios'
 import debounce from 'lodash.debounce'
 import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
-
-const API_URL =
-  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/communities'
-const API_URL_JOIN =
-  'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/community-members'
 
 function DiscoverCommunities() {
   const { user } = useContext(AuthContext)
@@ -36,7 +31,7 @@ function DiscoverCommunities() {
 
   const getCommunities = async () => {
     try {
-      const response = await axios.get(`${API_URL}`, {
+      const response = await axiosInstance.get(`/api/communities`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user.token}`,
@@ -56,12 +51,15 @@ function DiscoverCommunities() {
     debounce(async (query) => {
       setIsLoading(true)
       try {
-        const response = await axios.get(`${API_URL}/search?query=${query}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${user.token}`,
-          },
-        })
+        const response = await axiosInstance.get(
+          `/api/communities/search?query=${query}`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        )
         setCommunities(response.data)
         setIsLoading(false)
       } catch (error) {
@@ -70,7 +68,7 @@ function DiscoverCommunities() {
         console.error('Error fetching communities:', error)
       }
     }, 500),
-    [API_URL, user.token]
+    [user.token]
   )
 
   const handleSearch = async (query) => {
@@ -86,19 +84,16 @@ function DiscoverCommunities() {
 
   const getMe = async () => {
     try {
-      const response = await axios.get(
-        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me',
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
+      const response = await axiosInstance.get('/api/users/me', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
       setMe(response.data)
 
-      const communitiesResponse = await axios.get(
-        'https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/users/me/communities',
+      const communitiesResponse = await axiosInstance.get(
+        '/api/users/me/communities',
         {
           headers: {
             'Content-Type': 'application/json',
@@ -124,8 +119,8 @@ function DiscoverCommunities() {
     setLoadingJoin(communityId)
 
     try {
-      await axios.post(
-        `${API_URL_JOIN}/join/${userId}/${communityId}`,
+      await axiosInstance.post(
+        `/api/community-members/join/${userId}/${communityId}`,
         {},
         {
           headers: {

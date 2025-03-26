@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
-import { ListGroup, Spinner } from 'react-bootstrap'
+import { Spinner } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import '../assets/css/FollowList.css'
+import axiosInstance from '../services/axios'
 
 function FollowList({ userId, type, token }) {
   const [users, setUsers] = useState([])
@@ -14,8 +14,8 @@ function FollowList({ userId, type, token }) {
   useEffect(() => {
     const fetchFollowList = async () => {
       try {
-        const response = await axios.get(
-          `https://renewed-philomena-nichenetwork-60e5fcc0.koyeb.app/api/follows/${userId}/${type}`,
+        const response = await axiosInstance.get(
+          `/api/follows/${userId}/${type}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
