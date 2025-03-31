@@ -39,31 +39,19 @@ function NotificationDropdown() {
         {notifications.length === 0 && !loading ? (
           <Dropdown.Item disabled>Non ci sono notifiche</Dropdown.Item>
         ) : (
-          notifications.map((notification) => {
-            let linkTarget = ''
-
-            if (notification.type === 'FOLLOW') {
-              linkTarget = `/home/user/${notification.senderUsername}`
-            } else if (notification.relatedPostId) {
-              linkTarget = `/home/profile/${user.id}?highlight=${notification.relatedPostId}`
-            } else {
-              linkTarget = `/home/profile/${user.id}`
-            }
-
-            return (
-              <Dropdown.Item
-                key={notification.id}
-                style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
-                as={Link}
-                to={linkTarget}
-              >
-                <div style={{ fontSize: '0.9rem' }}>{notification.message}</div>
-                <div style={{ fontSize: '0.7rem', color: 'gray' }}>
-                  {new Date(notification.createdAt).toLocaleString()}
-                </div>
-              </Dropdown.Item>
-            )
-          })
+          notifications.map((notification) => (
+            <Dropdown.Item
+              key={notification.id}
+              style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
+              as={Link}
+              to={`/home/profile/${user.id}?highlight=${notification.relatedPostId}`}
+            >
+              <div style={{ fontSize: '0.9rem' }}>{notification.message}</div>
+              <div style={{ fontSize: '0.7rem', color: 'gray' }}>
+                {new Date(notification.createdAt).toLocaleString()}
+              </div>
+            </Dropdown.Item>
+          ))
         )}
 
         {notifications.length > 0 && (
