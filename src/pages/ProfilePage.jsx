@@ -262,7 +262,7 @@ function ProfilePage() {
         </Col>
 
         <Col md={8}>
-          <h3>I tuoi post</h3>
+          <h3 className='text-light'>I tuoi post</h3>
           {posts ? (
             posts.content.map((post) => (
               <PostCard
@@ -272,7 +272,7 @@ function ProfilePage() {
               />
             ))
           ) : (
-            <p>Non hai ancora pubblicato post.</p>
+            <p className='text-light'>Non hai ancora pubblicato post.</p>
           )}
         </Col>
       </Row>

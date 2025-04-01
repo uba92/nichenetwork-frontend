@@ -46,8 +46,10 @@ function FollowingFeed() {
           <Alert variant='danger'>Errore nel caricamento dei post</Alert>
         )}
         <Col className='text-center'>
-          <h1>Following</h1>
-          <p className='lead'>Non perderti i post di tutti i tuoi amici</p>
+          <h1 className='text-light'>Following</h1>
+          <p className='lead text-light'>
+            Non perderti i post di tutti i tuoi amici
+          </p>
         </Col>
       </Row>
       <Row>
