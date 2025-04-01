@@ -13,7 +13,7 @@ function NotificationDropdown() {
   const numberOfUnreadNotifications = notifications.length
 
   return (
-    <Dropdown align='end' style={{ maxHeight: '400px', overflowY: 'auto' }}>
+    <Dropdown align='end'>
       <Dropdown.Toggle variant='dark' id='dropdown-notifications'>
         <Bell size={20} color='#fff' />
         {hasUnread && (
@@ -23,7 +23,9 @@ function NotificationDropdown() {
         )}
       </Dropdown.Toggle>
 
-      <Dropdown.Menu style={{ minWidth: '300px' }}>
+      <Dropdown.Menu
+        style={{ minWidth: '300px', maxHeight: '600px', overflowY: 'auto' }}
+      >
         <Dropdown.Header>
           {loading ? (
             <Spinner animation='border' size='sm' />
