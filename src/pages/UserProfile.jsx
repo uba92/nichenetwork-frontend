@@ -446,7 +446,9 @@ function UserProfile() {
                     className='modal-image img-fluid'
                   />
                 ) : (
-                  <p className='modal-text'>{selectedPost?.content}</p>
+                  <p className='modal-text text-black'>
+                    {selectedPost?.content}
+                  </p>
                 )}
               </Modal.Body>
               <Modal.Footer className='border border-0 justify-content-center p-0'>
